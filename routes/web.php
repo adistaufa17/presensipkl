@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PembayaranController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,11 +20,34 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:siswa'])->group(function () {
-    // route khusus siswa
+
+    // Daftar pembayaran milik siswa
+    Route::get('/pembayaran/saya', [PembayaranController::class, 'myPayment'])
+        ->name('pembayaran.siswa');
+
+    // Form tambah pembayaran
+    Route::get('/pembayaran/buat', [PembayaranController::class, 'create'])
+        ->name('pembayaran.create');
+
+    // Simpan pembayaran
+    Route::post('/pembayaran/buat', [PembayaranController::class, 'store'])
+        ->name('pembayaran.store');
 });
 
+
 Route::middleware(['auth', 'role:pembimbing'])->group(function () {
-    // route khusus pembimbing
+
+    // Semua pembayaran siswa
+    Route::get('/pembayaran/semua', [PembayaranController::class, 'allPayment'])
+        ->name('pembayaran.semua');
+
+    // Detail pembayaran
+    Route::get('/pembayaran/detail/{id}', [PembayaranController::class, 'show'])
+        ->name('pembayaran.detail');
+
+    // Update status (diterima / ditolak)
+    Route::post('/pembayaran/status/{id}', [PembayaranController::class, 'updateStatus'])
+        ->name('pembayaran.status');
 });
 
 require __DIR__.'/auth.php';
