@@ -20,7 +20,7 @@
 
         <div class="mb-3">
             <label class="form-label">Jumlah (Rp)</label>
-            <input type="number" name="jumlah" class="form-control" required>
+            <input type="number" name="nominal" class="form-control" required>
         </div>
 
         <div class="mb-3">

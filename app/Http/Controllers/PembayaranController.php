@@ -19,7 +19,7 @@ class PembayaranController extends Controller
     {
         $request->validate([
             'jenis' => 'required',
-            'jumlah' => 'required|integer',
+            'nominal' => 'required|integer',
             'bukti' => 'required|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
@@ -28,7 +28,7 @@ class PembayaranController extends Controller
         Pembayaran::create([
             'user_id' => Auth::id(),
             'jenis' => $request->jenis,
-            'jumlah' => $request->jumlah,   // ← sesuai blade
+            'nominal' => $request->nominal,   // ← sesuai blade
             'bukti' => $path,
             'status' => 'pending',
         ]);
@@ -40,9 +40,17 @@ class PembayaranController extends Controller
     // SISWA LIHAT PEMBAYARAN MEREKA
     public function myPayment()
     {
-        $payments = Pembayaran::where('user_id', Auth::id())->get(); // ← variabel sesuai blade
-        return view('pembayaran.siswa_index', compact('payments'));
+        $payments = Pembayaran::where('user_id', Auth::id())->get();
+
+        return view('pembayaran.siswa_index', [
+            'payments' => $payments,
+            'total' => $payments->sum('jumlah'),
+            'diterima' => $payments->where('status', 'diterima')->count(),
+            'pending' => $payments->where('status', 'pending')->count(),
+            'ditolak' => $payments->where('status', 'ditolak')->count(),
+        ]);
     }
+
 
     // SEMUA PEMBAYARAN (PEMBIMBING)
     public function allPayment()
