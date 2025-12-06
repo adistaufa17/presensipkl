@@ -119,9 +119,17 @@
                             <td>{{ $p->nama_tagihan }}</td>
                             <td>Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
                             <td>
-                                <span class="badge bg-info">{{ ucfirst($p->metode) }}</span>
+                                <span class="badge bg-info">{{ ucfirst($p->metode ?? 'N/A') }}</span>
                             </td>
-                            <td>{{ $p->tanggal_bayar->format('d M Y H:i') }}</td>
+                            <td>
+                                @if($p->tanggal_bayar)
+                                    {{ $p->tanggal_bayar->format('d M Y H:i') }}
+                                @elseif($p->updated_at)
+                                    {{ $p->updated_at->format('d M Y H:i') }}
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
                             <td>
                                 <a href="{{ route('pembayaran.detail', $p->id) }}" class="btn btn-sm btn-primary">
                                     👁️ Detail
