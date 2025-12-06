@@ -144,7 +144,7 @@
                     </div>
                     <form action="{{ route('pembayaran.bayar') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        {{-- SESUAI CONTROLLER: gunakan 'id' --}}
+                        {{-- PENTING: Sesuai dengan controller, gunakan 'id' bukan 'pembayaran_id' --}}
                         <input type="hidden" name="id" value="{{ $p->id }}">
                         
                         <div class="modal-body">
@@ -164,20 +164,20 @@
 
                             <div class="mb-3" id="buktiBayar{{ $p->id }}" style="display: none;">
                                 <label for="bukti{{ $p->id }}" class="form-label fw-bold">
-                                    Upload Bukti Pembayaran <span class="text-danger" id="required{{ $p->id }}" style="display: none;">*</span>
+                                    Upload Bukti Transfer <span class="text-danger" id="required{{ $p->id }}">*</span>
                                 </label>
-                                <input type="file" class="form-control" id="bukti{{ $p->id }}" name="bukti" accept="image/jpeg,image/png,image/jpg">
+                                <input type="file" class="form-control" id="bukti{{ $p->id }}" name="bukti" accept="image/*">
                                 <small class="text-muted">Format: JPG, PNG, JPEG (Max 2MB)</small>
-                                <small class="text-danger d-block mt-1" id="info{{ $p->id }}" style="display: none;">
-                                    <strong>⚠️ WAJIB upload bukti untuk metode transfer!</strong>
+                                <small class="text-danger d-block" id="info{{ $p->id }}" style="display: none;">
+                                    <strong>WAJIB upload bukti untuk metode transfer!</strong>
                                 </small>
                             </div>
 
                             <div class="alert alert-warning">
                                 <small>
-                                    <strong>📝 Catatan:</strong><br>
+                                    <strong>⚠️ Catatan:</strong><br>
                                     • <strong>Cash/Tunai:</strong> Bukti pembayaran opsional<br>
-                                    • <strong>Transfer:</strong> Bukti transfer <strong>WAJIB</strong> diupload
+                                    • <strong>Transfer:</strong> Bukti transfer WAJIB diupload
                                 </small>
                             </div>
                         </div>
@@ -198,19 +198,16 @@
                 const infoText = document.getElementById('info{{ $p->id }}');
                 
                 if (metode === 'transfer') {
-                    // Transfer: WAJIB upload bukti
                     buktiDiv.style.display = 'block';
                     buktiInput.setAttribute('required', 'required');
                     requiredSign.style.display = 'inline';
                     infoText.style.display = 'block';
                 } else if (metode === 'cash') {
-                    // Cash: Bukti opsional
                     buktiDiv.style.display = 'block';
                     buktiInput.removeAttribute('required');
                     requiredSign.style.display = 'none';
                     infoText.style.display = 'none';
                 } else {
-                    // Belum pilih metode
                     buktiDiv.style.display = 'none';
                     buktiInput.removeAttribute('required');
                 }
