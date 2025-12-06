@@ -80,6 +80,16 @@ class PembayaranController extends Controller
         return back()->with('success', 'Pembayaran berhasil dikirim! Menunggu konfirmasi dari pembimbing.');
     }
 
+    public function dashboardSiswa()
+    {
+        $tagihanBelumBayar = Pembayaran::where('user_id', auth()->id())
+            ->where('status', 'belum_bayar')
+            ->orderBy('tenggat', 'asc')
+            ->limit(3)
+            ->get();
+        return view('pembayaran.dashboardsiswa', compact('tagihanBelumBayar'));
+    }
+
     public function dashboard()
     {
         // Hitung statistik pembayaran
@@ -114,7 +124,7 @@ class PembayaranController extends Controller
             ->sortByDesc('jumlah')
             ->take(5);
 
-        return view('pembayaran.dashboard', compact(
+        return view('pembimbing.dashboard', compact(
             'totalTagihan',
             'belumBayar',
             'pending',

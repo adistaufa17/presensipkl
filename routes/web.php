@@ -23,6 +23,7 @@
     // ROUTE SISWA (role: siswa)
     // ==========================================
     Route::middleware(['auth'])->group(function () {
+        Route::get('/pembayaran/dashboardsiswa', [PembayaranController::class, 'dashboardSiswa'])->name('pembayaran.dashboardsiswa');
         Route::get('/pembayaran/saya', [PembayaranController::class, 'index'])->name('pembayaran.siswa');
         Route::post('/pembayaran/bayar', [PembayaranController::class, 'bayar'])->name('pembayaran.bayar');
     });
@@ -32,9 +33,10 @@
     // ==========================================
     Route::middleware(['auth'])->group(function () {
         // Dashboard pembimbing
-        Route::get('/pembimbing/dashboard', [PembayaranController::class, 'dashboard'])->name('pembimbing.dashboard');
-        
-        // Manajemen tagihan
+        Route::get('/pembimbing/dashboard', [PembayaranController::class, 'dashboard'])
+            ->name('pembimbing.dashboard');
+                
+        // Manajemen tagihan pembimbing
         Route::get('/tagihan', [TagihanController::class, 'index'])->name('tagihan.index');
         Route::get('/tagihan/create', [TagihanController::class, 'create'])->name('tagihan.create');
         Route::post('/tagihan', [TagihanController::class, 'store'])->name('tagihan.store');
