@@ -98,7 +98,7 @@
                     @empty
                     <tr>
                         <td colspan="6" class="text-center text-muted py-3">
-                            Belum ada.
+                            Belum ada pembayaran.
                         </td>
                     </tr>
                     @endforelse
