@@ -12,16 +12,19 @@ class Pembayaran extends Model
 
     protected $fillable = [
         'user_id',
-        'jenis',
+        'tagihan_id',
+        'nama_tagihan',
+        'kategori',
         'nominal',
         'bulan',
         'tenggat',
-        'metode',
-        'bukti',
-        'status_siswa',
         'status',
-        'keterangan',
+        'bukti',
+        'metode',
+        'tanggal_bayar',
+        'keterangan_pembimbing',
     ];
+
 
 
     public function user()
