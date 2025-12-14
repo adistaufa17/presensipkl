@@ -269,7 +269,7 @@
 
             <nav class="sidebar-menu">
                 @if(auth()->user()->role === 'siswa')
-                    <a href="{{ route('pembayaran.dashboardsiswa') }}" class="sidebar-item {{ request()->routeIs('pembayaran.dashboardsiswa') ? 'active' : '' }}">
+                    <a href="{{ route('siswa.dashboard') }}" class="sidebar-item {{ request()->routeIs('siswa.dashboard') ? 'active' : '' }}">
                         <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="3" width="7" height="7"></rect>
                             <rect x="14" y="3" width="7" height="7"></rect>

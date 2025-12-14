@@ -129,7 +129,7 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
-        return view('dashboardSiswa', compact('tagihanBelumBayar'));
+        return view('siswa/dashboard', compact('tagihanBelumBayar'));
     }
 
     public function getRealtimeData()

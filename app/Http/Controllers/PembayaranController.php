@@ -14,14 +14,7 @@ use Illuminate\Support\Facades\Storage;
 
 class PembayaranController extends Controller
 {
-    /**
-     * ===== ROUTES UNTUK SISWA =====
-     */
-
-    /**
-     * Index Pembayaran Siswa
-     * Route: /pembayaran/siswa
-     */
+  
     public function index()
     {
         $payments = Pembayaran::where('user_id', Auth::id())
@@ -29,13 +22,9 @@ class PembayaranController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('pembayaran.siswa_index', compact('payments'));
+        return view('pembayaran.siswa-index', compact('payments'));
     }
 
-    /**
-     * FIXED: Method Bayar dengan Upload File
-     * Route: POST /pembayaran/bayar
-     */
     public function bayar(Request $request)
     {
         // Validasi input dasar
@@ -44,23 +33,18 @@ class PembayaranController extends Controller
             'metode' => 'required|in:cash,transfer',
         ]);
 
-        // Ambil data pembayaran
         $pembayaran = Pembayaran::findOrFail($request->id);
 
-        // SECURITY: Cek apakah pembayaran ini milik user yang login
         if ($pembayaran->user_id !== Auth::id()) {
             return back()->with('error', 'Anda tidak memiliki akses ke pembayaran ini!');
         }
 
-        // Cek apakah pembayaran sudah diterima
         if ($pembayaran->status === 'diterima') {
             return back()->with('error', 'Pembayaran ini sudah diterima dan tidak bisa diubah!');
         }
 
-        // Inisialisasi bukti path
         $buktiPath = $pembayaran->bukti;
 
-        // ⚠️ FIX: Jika metode transfer, WAJIB upload bukti
         if ($request->metode === 'transfer') {
             $request->validate([
                 'bukti' => 'required|image|mimes:jpg,jpeg,png|max:2048'
@@ -110,9 +94,6 @@ class PembayaranController extends Controller
         return back()->with('success', 'Pembayaran berhasil dikirim! Menunggu konfirmasi dari pembimbing.');
     }
 
-    /**
-     * Dashboard Siswa (jika digunakan)
-     */
     public function dashboardSiswa()
     {
         $userId = auth()->id();
@@ -153,7 +134,7 @@ class PembayaranController extends Controller
             ->take(3)
             ->get();
 
-        return view('pembayaran.dashboardSiswa', compact(
+        return view('siswa.dashboard', compact(
             'presensiHariIni',
             'summary',
             'dataGrafik',
@@ -162,21 +143,9 @@ class PembayaranController extends Controller
         ));
     }
 
-    /**
-     * ===== ROUTES UNTUK PEMBIMBING =====
-     */
-
-    /**
-     * Dashboard Pembimbing
-     */
     public function dashboard()
     {
-        // ⚠️ FIX: Jika tidak ada relasi siswaBimbingan, ambil semua siswa
         $siswaIds = User::where('role', 'siswa')->pluck('id');
-
-        // Atau jika ada relasi siswaBimbingan:
-        // $pembimbing = auth()->user();
-        // $siswaIds = $pembimbing->siswaBimbingan()->pluck('id');
 
         $totalTagihan = Pembayaran::whereIn('user_id', $siswaIds)->count();
         $belumBayar = Pembayaran::whereIn('user_id', $siswaIds)->where('status', 'belum_bayar')->count();
@@ -225,10 +194,6 @@ class PembayaranController extends Controller
         ));
     }
 
-    /**
-     * Semua Pembayaran
-     * Route: /pembayaran/semua
-     */
     public function semua()
     {
         $payments = Pembayaran::with('user')
@@ -247,10 +212,6 @@ class PembayaranController extends Controller
         return view('pembayaran.semua', compact('payments', 'groupedPayments'));
     }
 
-    /**
-     * Detail Pembayaran
-     * Route: /pembayaran/{id}/detail
-     */
     public function detail($id)
     {
         $payment = Pembayaran::with('user', 'tagihan')->findOrFail($id);
@@ -264,10 +225,6 @@ class PembayaranController extends Controller
         return view('pembayaran.detail', compact('payment', 'historyPembayaran'));
     }
 
-    /**
-     * Update Status Pembayaran
-     * Route: POST /pembayaran/{id}/status
-     */
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
@@ -301,10 +258,6 @@ class PembayaranController extends Controller
         return back()->with('success', $message);
     }
 
-    /**
-     * Pembayaran per Siswa
-     * Route: /pembayaran/siswa/{userId}
-     */
     public function bySiswa($userId)
     {
         $siswa = User::where('id', $userId)->where('role', 'siswa')->firstOrFail();
@@ -326,15 +279,10 @@ class PembayaranController extends Controller
         return view('pembayaran.by_siswa', compact('siswa', 'payments', 'stats'));
     }
 
-    /**
-     * Reset Pembayaran ke Belum Bayar
-     * Route: POST /pembayaran/{id}/reset
-     */
     public function reset($id)
     {
         $pembayaran = Pembayaran::findOrFail($id);
 
-        // Hapus bukti pembayaran jika ada
         if ($pembayaran->bukti && Storage::disk('public')->exists($pembayaran->bukti)) {
             Storage::disk('public')->delete($pembayaran->bukti);
         }
@@ -351,10 +299,6 @@ class PembayaranController extends Controller
         return back()->with('success', 'Pembayaran berhasil direset ke status belum bayar!');
     }
 
-    /**
-     * Hapus Pembayaran (opsional)
-     * Route: DELETE /pembayaran/{id}
-     */
     public function destroy($id)
     {
         $pembayaran = Pembayaran::findOrFail($id);

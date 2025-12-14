@@ -95,7 +95,7 @@ class PresensiController extends Controller
      */
     public function createIzin()
     {
-        return view('izin');
+        return view('siswa/izin');
     }
 
     /**
