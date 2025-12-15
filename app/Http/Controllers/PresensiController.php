@@ -5,55 +5,81 @@ namespace App\Http\Controllers;
 use App\Models\Presensi;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class PresensiController extends Controller
 {
     /**
-     * Absen Masuk
+     * Absen Masuk dengan Foto Selfie
      */
-    public function storeMasuk()
+    public function storeMasuk(Request $request)
     {
-        // ✅ Set timezone
+        $request->validate([
+            'foto_masuk' => 'required|string',
+        ], [
+            'foto_masuk.required' => 'Foto selfie wajib diambil untuk absen masuk!',
+        ]);
+
         $now = Carbon::now('Asia/Jakarta');
         $today = $now->toDateString();
         $userId = auth()->id();
 
-        // Cek apakah sudah absen hari ini
+        // ❗ CEK SUDAH ABSEN
         $presensi = Presensi::where('user_id', $userId)
             ->where('tanggal', $today)
             ->first();
 
         if ($presensi) {
-            return back()->with('error', 'Anda sudah absen masuk hari ini!');
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda sudah absen masuk hari ini!'
+            ], 422);
         }
 
-        // Tentukan status berdasarkan jam masuk
-        $jamMasuk = $now;
-        $batasWaktu = Carbon::parse($today . ' 08:00:00', 'Asia/Jakarta');
-        
-        $status = $jamMasuk->greaterThan($batasWaktu) ? 'terlambat' : 'hadir';
+        // ✅ SIMPAN FOTO
+        $image = str_replace('data:image/png;base64,', '', $request->foto_masuk);
+        $image = str_replace(' ', '+', $image);
+        $imageName = 'presensi_' . $userId . '_' . time() . '.png';
 
-        // Simpan presensi
+        Storage::disk('public')->put(
+            'foto_presensi/' . $imageName,
+            base64_decode($image)
+        );
+
+        // ⏰ STATUS
+        $batasWaktu = Carbon::parse($today . ' 08:00:00', 'Asia/Jakarta');
+        $status = $now->greaterThan($batasWaktu) ? 'terlambat' : 'hadir';
+
         Presensi::create([
             'user_id' => $userId,
             'tanggal' => $today,
-            'jam_masuk' => $jamMasuk->format('H:i:s'),
+            'jam_masuk' => $now->format('H:i:s'),
+            'foto_masuk' => 'foto_presensi/' . $imageName,
             'status' => $status,
         ]);
 
-        $message = $status == 'terlambat' 
-            ? 'Presensi masuk berhasil. Anda terlambat!' 
-            : 'Presensi masuk berhasil!';
-
-        return back()->with('success', $message);
+        return response()->json([
+            'success' => true,
+            'message' => $status === 'terlambat'
+                ? 'Presensi masuk berhasil. Anda terlambat!'
+                : 'Presensi masuk berhasil!'
+        ]);
     }
 
+
     /**
-     * Absen Keluar
+     * Absen Keluar dengan Jurnal Kegiatan
      */
-    public function storeKeluar()
+    public function storeKeluar(Request $request)
     {
-        // ✅ Set timezone
+        $request->validate([
+            'jurnal_kegiatan' => 'required|string|min:50|max:1000',
+        ], [
+            'jurnal_kegiatan.required' => 'Jurnal kegiatan wajib diisi!',
+            'jurnal_kegiatan.min' => 'Jurnal kegiatan minimal 50 karakter.',
+            'jurnal_kegiatan.max' => 'Jurnal kegiatan maksimal 1000 karakter.',
+        ]);
+
         $now = Carbon::now('Asia/Jakarta');
         $today = $now->toDateString();
         $userId = auth()->id();
@@ -82,12 +108,13 @@ class PresensiController extends Controller
             return back()->with('error', 'Anda belum bisa absen keluar! Minimal 6 jam kerja.');
         }
 
-        // Update jam keluar
+        // Update jam keluar dan jurnal
         $presensi->update([
             'jam_keluar' => $jamKeluar->format('H:i:s'),
+            'jurnal_kegiatan' => $request->jurnal_kegiatan,
         ]);
 
-        return back()->with('success', 'Presensi keluar berhasil! Hati-hati di jalan.');
+        return back()->with('success', 'Presensi keluar berhasil! Jurnal kegiatan telah tersimpan. Hati-hati di jalan.');
     }
 
     /**
@@ -99,13 +126,12 @@ class PresensiController extends Controller
     }
 
     /**
-     * ✅ FIXED: Simpan Pengajuan Izin/Sakit dengan Logika yang Benar
+     * Simpan Pengajuan Izin/Sakit
      */
     public function storeIzin(Request $request)
     {
-        // Validasi input
         $request->validate([
-            'tanggal' => 'required|date', // ✅ Hapus after_or_equal agar bisa izin kemarin
+            'tanggal' => 'required|date',
             'status' => 'required|in:izin,sakit',
             'keterangan' => 'nullable|string|max:500',
         ], [
@@ -118,19 +144,16 @@ class PresensiController extends Controller
         $userId = auth()->id();
         $tanggal = $request->tanggal;
         $tanggalCarbon = Carbon::parse($tanggal);
-        $today = Carbon::now('Asia/Jakarta')->toDateString();
 
-        // ✅ LOGIKA BARU: Cek apakah tanggal di masa depan (lebih dari hari ini)
         if ($tanggalCarbon->greaterThan(Carbon::now('Asia/Jakarta'))) {
             return back()
                 ->withInput()
                 ->with('error', 'Tidak bisa mengajukan izin untuk tanggal yang belum terjadi!');
         }
 
-        // ✅ LOGIKA: Cek apakah sudah ada presensi HADIR di tanggal tersebut
         $presensiExist = Presensi::where('user_id', $userId)
             ->where('tanggal', $tanggal)
-            ->whereIn('status', ['hadir', 'terlambat']) // Cek hanya status hadir/terlambat
+            ->whereIn('status', ['hadir', 'terlambat'])
             ->first();
 
         if ($presensiExist) {
@@ -139,14 +162,12 @@ class PresensiController extends Controller
                 ->with('error', 'Anda sudah absen HADIR di tanggal tersebut! Tidak bisa mengajukan izin.');
         }
 
-        // ✅ LOGIKA: Jika sudah ada izin/sakit, update saja
         $presensiIzin = Presensi::where('user_id', $userId)
             ->where('tanggal', $tanggal)
             ->whereIn('status', ['izin', 'sakit'])
             ->first();
 
         if ($presensiIzin) {
-            // Update izin yang sudah ada
             $presensiIzin->update([
                 'status' => $request->status,
                 'keterangan' => $request->keterangan,
@@ -157,7 +178,6 @@ class PresensiController extends Controller
                 ->with('success', 'Pengajuan ' . strtoupper($request->status) . ' berhasil diperbarui!');
         }
 
-        // ✅ Simpan pengajuan izin/sakit baru
         Presensi::create([
             'user_id' => $userId,
             'tanggal' => $tanggal,
@@ -173,7 +193,7 @@ class PresensiController extends Controller
     }
 
     /**
-     * ✅ Halaman Riwayat Presensi (untuk link "See more")
+     * Halaman Riwayat Presensi (Siswa)
      */
     public function riwayat()
     {
@@ -181,12 +201,10 @@ class PresensiController extends Controller
         $bulanSekarang = $now->month;
         $tahunSekarang = $now->year;
 
-        // Ambil presensi user ini, urutkan terbaru
         $presensi = Presensi::where('user_id', auth()->id())
             ->orderBy('tanggal', 'desc')
             ->paginate(20);
 
-        // Statistik bulan ini
         $statsBulanIni = [
             'hadir' => Presensi::where('user_id', auth()->id())
                 ->whereMonth('tanggal', $bulanSekarang)
@@ -214,41 +232,59 @@ class PresensiController extends Controller
     }
 
     /**
-     * ✅ Rekap Presensi (untuk pembimbing/admin)
+     * Rekap Presensi untuk Pembimbing/Admin
      */
     public function rekap(Request $request)
     {
         $now = Carbon::now('Asia/Jakarta');
         $bulan = $request->input('bulan', $now->month);
         $tahun = $request->input('tahun', $now->year);
+        $siswaId = $request->input('siswa_id');
 
-        $presensi = Presensi::whereMonth('tanggal', $bulan)
+        $query = Presensi::whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
-            ->with('user')
-            ->orderBy('tanggal', 'desc')
-            ->get();
+            ->with('user');
+
+        if ($siswaId) {
+            $query->where('user_id', $siswaId);
+        }
+
+        $presensi = $query->orderBy('tanggal', 'desc')->paginate(20);
 
         $statsBulanIni = [
             'hadir' => Presensi::whereMonth('tanggal', $bulan)
                                 ->whereYear('tanggal', $tahun)
                                 ->where('status', 'hadir')
+                                ->when($siswaId, fn($q) => $q->where('user_id', $siswaId))
                                 ->count(),
             'terlambat' => Presensi::whereMonth('tanggal', $bulan)
                                     ->whereYear('tanggal', $tahun)
                                     ->where('status', 'terlambat')
+                                    ->when($siswaId, fn($q) => $q->where('user_id', $siswaId))
                                     ->count(),
             'izin' => Presensi::whereMonth('tanggal', $bulan)
                                 ->whereYear('tanggal', $tahun)
                                 ->whereIn('status', ['izin','sakit'])
+                                ->when($siswaId, fn($q) => $q->where('user_id', $siswaId))
                                 ->count(),
             'alpa' => Presensi::whereMonth('tanggal', $bulan)
                                 ->whereYear('tanggal', $tahun)
                                 ->where('status', 'alpa')
+                                ->when($siswaId, fn($q) => $q->where('user_id', $siswaId))
                                 ->count(),
         ];
 
-       return view('presensi.riwayat', compact('presensi', 'statsBulanIni'));
+        $siswaList = \App\Models\User::where('role', 'siswa')->get();
 
+       return view('presensi.rekap', compact('presensi', 'statsBulanIni', 'siswaList', 'bulan', 'tahun', 'siswaId'));
     }
 
+    /**
+     * Detail Presensi Individual (untuk Pembimbing)
+     */
+    public function detail($id)
+    {
+        $presensi = Presensi::with('user')->findOrFail($id);
+        return view('presensi.detail', compact('presensi'));
+    }
 }

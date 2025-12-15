@@ -17,6 +17,8 @@ class Presensi extends Model
         'status',
         'bukti_foto',
         'keterangan',
+        'foto_masuk',
+        'jurnal_kegiatan',
     ];
 
     public function user()

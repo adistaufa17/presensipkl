@@ -216,7 +216,7 @@
                         </div>
                         
                         <div class="card-footer bg-light text-center py-2">
-                            <a href="#" class="text-decoration-none small fw-bold text-primary">Lihat Semua Riwayat</a>
+                            <a href="{{ route('presensi.rekap') }}" class="text-decoration-none small fw-bold text-primary">Lihat Semua Riwayat</a>
                         </div>
                     </div>
                 </div>

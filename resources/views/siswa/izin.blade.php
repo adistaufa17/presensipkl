@@ -1,4 +1,3 @@
-{{-- resources/views/izin.blade.php --}}
 @extends('layouts.app')
 
 @section('content')
@@ -158,22 +157,50 @@
                     @endphp
 
                     @forelse($riwayatIzin as $izin)
-                    <div class="d-flex justify-content-between align-items-center border-bottom py-3">
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <span class="badge {{ $izin->status == 'izin' ? 'bg-warning text-dark' : 'bg-danger' }}">
-                                    {{ strtoupper($izin->status) }}
-                                </span>
-                                <span class="fw-bold">{{ \Carbon\Carbon::parse($izin->tanggal)->format('d M Y') }}</span>
-                                <span class="text-muted small">({{ \Carbon\Carbon::parse($izin->tanggal)->locale('id')->isoFormat('dddd') }})</span>
-                            </div>
-                            @if($izin->keterangan)
-                                <small class="text-muted d-block">{{ Str::limit($izin->keterangan, 80) }}</small>
+                    <div class="border-bottom py-3">
+                        <div class="d-flex gap-3">
+                            {{-- Foto Thumbnail jika ada --}}
+                            @if($izin->foto_masuk)
+                            <img src="{{ asset('storage/' . $izin->foto_masuk) }}" 
+                                 class="rounded border cursor-pointer"
+                                 width="60" 
+                                 height="60"
+                                 style="object-fit: cover;"
+                                 onclick="showImageModal('{{ asset('storage/' . $izin->foto_masuk) }}', '{{ \Carbon\Carbon::parse($izin->tanggal)->format('d M Y') }}')"
+                                 alt="Foto">
                             @else
-                                <small class="text-muted fst-italic">Tidak ada keterangan</small>
+                            <div class="bg-light rounded border d-flex align-items-center justify-content-center"
+                                 style="width: 60px; height: 60px; min-width: 60px;">
+                                <i class="bi bi-person-circle fs-3 text-muted"></i>
+                            </div>
                             @endif
+                            
+                            {{-- Info --}}
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                    <span class="badge {{ $izin->status == 'izin' ? 'bg-warning text-dark' : 'bg-danger' }}">
+                                        {{ strtoupper($izin->status) }}
+                                    </span>
+                                    <span class="fw-bold">{{ \Carbon\Carbon::parse($izin->tanggal)->format('d M Y') }}</span>
+                                    <span class="text-muted small">({{ \Carbon\Carbon::parse($izin->tanggal)->locale('id')->isoFormat('dddd') }})</span>
+                                </div>
+                                @if($izin->keterangan)
+                                    <small class="text-muted d-block">{{ Str::limit($izin->keterangan, 80) }}</small>
+                                @else
+                                    <small class="text-muted fst-italic">Tidak ada keterangan</small>
+                                @endif
+                                
+                                {{-- Tombol Lihat Jurnal jika ada --}}
+                                @if($izin->jurnal_kegiatan)
+                                <button class="btn btn-sm btn-outline-primary mt-2" 
+                                        onclick="showJurnalModal('{{ addslashes($izin->jurnal_kegiatan) }}', '{{ \Carbon\Carbon::parse($izin->tanggal)->format('d M Y') }}')">
+                                    <i class="bi bi-journal-text"></i> Lihat Jurnal
+                                </button>
+                                @endif
+                            </div>
+                            
+                            <i class="bi bi-check-circle-fill text-success fs-5"></i>
                         </div>
-                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
                     </div>
                     @empty
                     <div class="text-center py-4 text-muted">
@@ -218,6 +245,38 @@
     </div>
 </div>
 
+{{-- MODAL UNTUK FOTO BESAR --}}
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Foto Presensi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid rounded" alt="Foto Presensi">
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- MODAL UNTUK JURNAL LENGKAP --}}
+<div class="modal fade" id="jurnalModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jurnalModalLabel">Jurnal Kegiatan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="bg-light p-4 rounded">
+                    <p id="modalJurnal" style="white-space: pre-line;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 .form-check-card .form-check-input {
     position: absolute;
@@ -243,6 +302,12 @@
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
+.cursor-pointer {
+    cursor: pointer;
+}
+.cursor-pointer:hover {
+    opacity: 0.8;
+}
 </style>
 
 <script>
@@ -258,5 +323,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     dateInput.setAttribute('max', today);
 });
+
+// Function untuk show image modal
+function showImageModal(imageUrl, tanggal) {
+    document.getElementById('modalImage').src = imageUrl;
+    document.getElementById('imageModalLabel').textContent = 'Foto Presensi - ' + tanggal;
+    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+    modal.show();
+}
+
+// Function untuk show jurnal modal
+function showJurnalModal(jurnal, tanggal) {
+    document.getElementById('modalJurnal').textContent = jurnal;
+    document.getElementById('jurnalModalLabel').textContent = 'Jurnal Kegiatan - ' + tanggal;
+    const modal = new bootstrap.Modal(document.getElementById('jurnalModal'));
+    modal.show();
+}
 </script>
 @endsection

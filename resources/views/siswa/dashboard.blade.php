@@ -1,8 +1,6 @@
-
 @extends('layouts.app')
 
 @section('content')
-{{-- SweetAlert & JQuery untuk Pop Up --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -58,55 +56,77 @@
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-4">Presensi Hari Ini</h5>
                     
-                    {{-- Status Presensi Hari Ini --}}
                     @php
                         $presensiHariIni = \App\Models\Presensi::where('user_id', auth()->id())
                             ->where('tanggal', now()->toDateString())
                             ->first();
                     @endphp
 
-                    @if($presensiHariIni)
-                        <div class="alert alert-primary mb-3 text-center">
-                            <strong>Status: {{ strtoupper($presensiHariIni->status) }}</strong>
-                            <br>
-                            <small>
-                                Masuk: {{ \Carbon\Carbon::parse($presensiHariIni->jam_masuk)->format('H:i') }}
-                                @if($presensiHariIni->jam_keluar)
-                                    | Keluar: {{ \Carbon\Carbon::parse($presensiHariIni->jam_keluar)->format('H:i') }}
+                    @if($presensiHariIni && $presensiHariIni->jam_masuk)
+
+                        <div class="alert alert-primary mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                {{-- Foto Selfie Thumbnail --}}
+                                @if($presensiHariIni->foto_masuk)
+                                <img src="{{ asset('storage/' . $presensiHariIni->foto_masuk) }}" 
+                                     class="rounded border cursor-pointer"
+                                     width="60" 
+                                     height="60"
+                                     style="object-fit: cover;"
+                                     onclick="showImageModal('{{ asset('storage/' . $presensiHariIni->foto_masuk) }}')"
+                                     alt="Foto Presensi">
                                 @endif
-                            </small>
+                                
+                                {{-- Info Status --}}
+                                <div class="flex-grow-1">
+                                    @if($presensiHariIni && $presensiHariIni->jam_masuk)
+                                        <strong>Status: {{ strtoupper($presensiHariIni->status) }}</strong>
+                                    @endif
+                                    <small>
+                                        Masuk: {{ \Carbon\Carbon::parse($presensiHariIni->jam_masuk)->format('H:i') }}
+                                        @if($presensiHariIni->jam_keluar)
+                                            | Keluar: {{ \Carbon\Carbon::parse($presensiHariIni->jam_keluar)->format('H:i') }}
+                                        @endif
+                                    </small>
+                                    
+                                    {{-- Tombol Lihat Jurnal --}}
+                                    @if($presensiHariIni->jurnal_kegiatan)
+                                    <div class="mt-2">
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                onclick="showJurnalModal('{{ addslashes($presensiHariIni->jurnal_kegiatan) }}')">
+                                            <i class="bi bi-journal-text"></i> Lihat Jurnal
+                                        </button>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                     @endif
                     
                     <div class="row g-3 mb-4">
                         <div class="col-6">
-                            {{-- FORM MASUK --}}
-                            <form method="POST" action="{{ route('presensi.masuk') }}" id="formMasuk">
-                                @csrf
-                                <button type="submit" 
-                                        class="btn btn-outline-success w-100 py-3 d-flex align-items-center justify-content-center gap-2"
-                                        {{ $presensiHariIni ? 'disabled' : '' }}>
-                                    <i class="bi bi-box-arrow-in-right" style="font-size: 1.5rem;"></i>
-                                    <span class="fw-semibold">Masuk</span>
-                                </button>
-                            </form>
+                            {{-- BUTTON MASUK (Modal Trigger) --}}
+                            <button type="button" 
+                                    class="btn btn-outline-success w-100 py-3 d-flex align-items-center justify-content-center gap-2"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#modalAbsenMasuk"
+                                    {{ ($presensiHariIni && $presensiHariIni->jam_masuk) ? 'disabled' : '' }}
+                                <i class="bi bi-box-arrow-in-right" style="font-size: 1.5rem;"></i>
+                                <span class="fw-semibold">Masuk</span>
+                            </button>
                         </div>
                         <div class="col-6">
-                            {{-- FORM KELUAR --}}
-                            <form method="POST" action="{{ route('presensi.keluar') }}" id="formKeluar">
-                                @csrf
-                                <button type="button" 
-                                        onclick="cekJamKeluar()"
-                                        class="btn btn-outline-danger w-100 py-3 d-flex align-items-center justify-content-center gap-2"
-                                        {{ (!$presensiHariIni || $presensiHariIni->jam_keluar) ? 'disabled' : '' }}>
-                                    <i class="bi bi-box-arrow-right" style="font-size: 1.5rem;"></i>
-                                    <span class="fw-semibold">Keluar</span>
-                                </button>
-                            </form>
+                            {{-- BUTTON KELUAR (Modal Trigger) --}}
+                            <button type="button" 
+                                    onclick="cekJamKeluar()"
+                                    class="btn btn-outline-danger w-100 py-3 d-flex align-items-center justify-content-center gap-2"
+                                    {{ (!$presensiHariIni || $presensiHariIni->jam_keluar) ? 'disabled' : '' }}>
+                                <i class="bi bi-box-arrow-right" style="font-size: 1.5rem;"></i>
+                                <span class="fw-semibold">Keluar</span>
+                            </button>
                         </div>
                     </div>
 
-                    {{-- BUTTON PENGAJUAN IZIN --}}
                     <a href="{{ route('presensi.izin') }}" class="btn btn-light w-100 py-2 d-flex align-items-center justify-content-center gap-2">
                         <i class="bi bi-file-earmark-text"></i>
                         <span>Pengajuan Izin / Sakit</span>
@@ -201,53 +221,46 @@
                         </div>
                     </div>
 
-                    <a href="#" class="btn btn-link text-decoration-none d-block text-center mt-3">
+                    <a href="{{ route('presensi.riwayat') }}" class="btn btn-link text-decoration-none d-block text-center mt-3">
                         See more →
                     </a>
                 </div>
             </div>
         </div>
 
-        {{-- KOLOM TENGAH: KALENDER --}}
+        {{-- KOLOM TENGAH: KALENDER FUNGSIONAL --}}
         <div class="col-lg-4">
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body p-4">
-                    <h5 class="fw-bold mb-3">{{ now()->format('F Y') }}</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="prevMonth()">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <h5 class="fw-bold mb-0" id="calendarMonth"></h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="nextMonth()">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
                     
-                    <table class="table table-borderless table-sm text-center">
+                    <table class="table table-borderless table-sm text-center" id="calendarTable">
                         <thead>
                             <tr class="text-muted">
                                 <th>Min</th><th>Sen</th><th>Sel</th><th>Rab</th><th>Kam</th><th>Jum</th><th>Sab</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td class="py-2"><div class="text-muted small">1</div></td>
-                                <td class="py-2"><div class="text-muted small">2</div></td>
-                                <td class="py-2"><div class="text-muted small">3</div></td>
-                                <td class="py-2"><div class="text-muted small">4</div></td>
-                                <td class="py-2 table-active align-middle border rounded border-primary bg-light">
-                                    @if($presensiHariIni)
-                                        <div class="d-flex flex-column justify-content-center" style="line-height: 1.2;">
-                                            <span class="text-success fw-bold" style="font-size: 10px;">
-                                                {{ \Carbon\Carbon::parse($presensiHariIni->jam_masuk)->format('H:i') }}
-                                            </span>
-                                            @if($presensiHariIni->jam_keluar)
-                                                <span class="text-danger fw-bold" style="font-size: 10px;">
-                                                    {{ \Carbon\Carbon::parse($presensiHariIni->jam_keluar)->format('H:i') }}
-                                                </span>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <div class="text-primary small fw-bold">Now</div>
-                                    @endif
-                                </td>
-                                <td class="py-2"><div class="text-muted small">6</div></td>
-                                <td class="py-2"><div class="text-muted small">7</div></td>
-                            </tr>
+                        <tbody id="calendarBody">
+                            <!-- Diisi dengan JavaScript -->
                         </tbody>
                     </table>
-                    <p class="text-center text-muted small">Kalender kehadiran bulan ini</p>
+                    <p class="text-center text-muted small mb-2">Kalender kehadiran bulan ini</p>
+                    
+                    {{-- Legenda --}}
+                    <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+                        <small><span class="badge bg-success">Hadir</span></small>
+                        <small><span class="badge bg-warning">Telat</span></small>
+                        <small><span class="badge bg-info">Izin</span></small>
+                        <small><span class="badge bg-danger">Alpa</span></small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -292,6 +305,109 @@
     </div>
 </div>
 
+{{-- MODAL UNTUK FOTO BESAR --}}
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">📸 Foto Presensi Hari Ini</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid rounded border" alt="Foto Presensi">
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- MODAL UNTUK JURNAL HARI INI --}}
+<div class="modal fade" id="jurnalModalToday" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">📝 Jurnal Kegiatan Hari Ini</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="bg-light p-4 rounded">
+                    <p id="modalJurnalToday" style="white-space: pre-line;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- MODAL ABSEN MASUK (dengan Selfie Camera) --}}
+<div class="modal fade" id="modalAbsenMasuk" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">📸 Absen Masuk - Ambil Foto Selfie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <video id="video" width="100%" height="300" autoplay class="border rounded mb-3"></video>
+                <canvas id="canvas" style="display:none;"></canvas>
+                <img id="photo" style="display:none;" class="border rounded mb-3" width="100%">
+                
+                <button type="button" class="btn btn-primary mb-2" id="snap" onclick="takeSnapshot()">
+                    <i class="bi bi-camera-fill"></i> Ambil Foto
+                </button>
+                <button type="button" class="btn btn-secondary mb-2" id="retake" onclick="retakePhoto()" style="display:none;">
+                    <i class="bi bi-arrow-clockwise"></i> Ambil Ulang
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success" id="submitAbsen" onclick="submitAbsenMasuk()" disabled>
+                    <i class="bi bi-check-circle-fill"></i> Konfirmasi Absen
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- MODAL ABSEN KELUAR (dengan Form Jurnal) --}}
+<div class="modal fade" id="modalAbsenKeluar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <form method="POST" action="{{ route('presensi.keluar') }}" id="formKeluar">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">📝 Absen Keluar - Isi Jurnal Kegiatan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Wajib diisi!</strong> Tuliskan kegiatan apa saja yang Anda lakukan hari ini (minimal 50 karakter).
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Jurnal Kegiatan Hari Ini</label>
+                        <textarea name="jurnal_kegiatan" 
+                                  class="form-control" 
+                                  rows="8" 
+                                  placeholder="Contoh: Hari ini saya melakukan...&#10;1. Instalasi jaringan LAN di ruang server&#10;2. Konfigurasi router dan switch&#10;3. Testing koneksi internet&#10;4. Dokumentasi hasil pekerjaan"
+                                  required
+                                  minlength="50"
+                                  maxlength="1000"></textarea>
+                        <small class="text-muted">
+                            <span id="charCount">0</span>/1000 karakter (minimal 50)
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-box-arrow-right"></i> Konfirmasi Keluar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <style>
 .card {
     transition: transform 0.2s;
@@ -303,10 +419,36 @@
 .btn-outline-danger:hover {
     transform: scale(1.02);
 }
+#calendarTable td {
+    padding: 8px 4px;
+    cursor: pointer;
+    position: relative;
+}
+#calendarTable td:hover {
+    background-color: #f8f9fa;
+}
+.calendar-day {
+    width: 100%;
+    height: 45px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+}
+.calendar-day.today {
+    border: 2px solid #0d6efd;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+.cursor-pointer:hover {
+    opacity: 0.8;
+}
 </style>
 
 <script>
-// Update Real-time Clock
+// ==================== UPDATE REAL-TIME CLOCK ====================
 function updateTime() {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
@@ -317,7 +459,202 @@ function updateTime() {
 setInterval(updateTime, 1000);
 updateTime();
 
-// Cek Jam Keluar (harus setelah jam 16:00)
+// ==================== KALENDER FUNGSIONAL ====================
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+const today = new Date();
+
+// Data presensi dari server
+// Data presensi dari server
+const presensiData = @json($presensiData ?? []);
+
+function renderCalendar() {
+    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    
+    document.getElementById('calendarMonth').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+    
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    
+    let html = '<tr>';
+    let dayCount = 1;
+    
+    // Fill empty cells before first day
+    for (let i = 0; i < firstDay; i++) {
+        html += '<td></td>';
+    }
+    
+    // Fill days
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const presensi = presensiData[date];
+        
+        let badgeColor = 'secondary';
+        let statusText = '';
+        let timeInfo = '';
+        
+        if (presensi) {
+            if (presensi.status === 'hadir') {
+                badgeColor = 'success';
+                statusText = '✓';
+            } else if (presensi.status === 'terlambat') {
+                badgeColor = 'warning';
+                statusText = '⚠';
+            } else if (presensi.status === 'izin' || presensi.status === 'sakit') {
+                badgeColor = 'info';
+                statusText = 'I';
+            } else if (presensi.status === 'alpa') {
+                badgeColor = 'danger';
+                statusText = 'A';
+            }
+            
+            if (presensi.jam_masuk) {
+                timeInfo = `<small style="font-size: 9px;">${presensi.jam_masuk.substring(0, 5)}</small>`;
+            }
+        }
+        
+        const isToday = (today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear);
+        const todayClass = isToday ? 'today' : '';
+        
+        html += `<td>
+            <div class="calendar-day ${todayClass}">
+                <div class="fw-bold">${day}</div>
+                ${statusText ? `<span class="badge bg-${badgeColor} badge-sm">${statusText}</span>` : ''}
+                ${timeInfo}
+            </div>
+        </td>`;
+        
+        if ((firstDay + day) % 7 === 0) {
+            html += '</tr><tr>';
+        }
+    }
+    
+    html += '</tr>';
+    document.getElementById('calendarBody').innerHTML = html;
+}
+
+function prevMonth() {
+    currentMonth--;
+    if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+    }
+    renderCalendar();
+}
+
+function nextMonth() {
+    currentMonth++;
+    if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+    }
+    renderCalendar();
+}
+
+// Initialize calendar
+renderCalendar();
+
+// ==================== WEBCAM SELFIE ====================
+let video = document.getElementById('video');
+let canvas = document.getElementById('canvas');
+let photo = document.getElementById('photo');
+let capturedImage = null;
+
+// Start camera when modal opens
+document.getElementById('modalAbsenMasuk').addEventListener('shown.bs.modal', function () {
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+            video.style.display = 'block';
+            photo.style.display = 'none';
+            document.getElementById('snap').style.display = 'inline-block';
+            document.getElementById('retake').style.display = 'none';
+            document.getElementById('submitAbsen').disabled = true;
+        })
+        .catch(err => {
+            Swal.fire('Error', 'Tidak dapat mengakses kamera: ' + err, 'error');
+        });
+});
+
+// Stop camera when modal closes
+document.getElementById('modalAbsenMasuk').addEventListener('hidden.bs.modal', function () {
+    if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+    }
+    capturedImage = null;
+});
+
+function takeSnapshot() {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    capturedImage = canvas.toDataURL('image/png');
+    
+    photo.src = capturedImage;
+    photo.style.display = 'block';
+    video.style.display = 'none';
+    
+    document.getElementById('snap').style.display = 'none';
+    document.getElementById('retake').style.display = 'inline-block';
+    document.getElementById('submitAbsen').disabled = false;
+}
+
+function retakePhoto() {
+    video.style.display = 'block';
+    photo.style.display = 'none';
+    document.getElementById('snap').style.display = 'inline-block';
+    document.getElementById('retake').style.display = 'none';
+    document.getElementById('submitAbsen').disabled = true;
+    capturedImage = null;
+}
+
+function submitAbsenMasuk() {
+    if (!capturedImage) {
+        Swal.fire('Error', 'Silakan ambil foto terlebih dahulu!', 'error');
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Konfirmasi Absen Masuk',
+        text: 'Apakah Anda yakin ingin melakukan absen masuk?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, Absen!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Submit via AJAX
+            fetch("{{ route('presensi.masuk') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    foto_masuk: capturedImage
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Berhasil!', data.message, 'success').then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(err => {
+                Swal.fire('Error', 'Terjadi kesalahan: ' + err, 'error');
+            });
+        }
+    });
+}
+
+// ==================== ABSEN KELUAR ====================
 function cekJamKeluar() {
     const now = new Date();
     const currentHour = now.getHours();
@@ -332,27 +669,29 @@ function cekJamKeluar() {
         return false;
     }
 
-    // Jika sudah jam 16:00, submit form
-    document.getElementById('formKeluar').submit();
+    // Buka modal jurnal
+    const modal = new bootstrap.Modal(document.getElementById('modalAbsenKeluar'));
+    modal.show();
 }
 
-// Konfirmasi sebelum absen masuk
-document.getElementById('formMasuk')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    Swal.fire({
-        title: 'Konfirmasi Absen Masuk',
-        text: 'Apakah Anda yakin ingin melakukan absen masuk?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#28a745',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Ya, Absen!',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            this.submit();
-        }
-    });
+// Character counter untuk jurnal
+document.querySelector('textarea[name="jurnal_kegiatan"]')?.addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length;
 });
+
+// ==================== MODAL FUNCTIONS ====================
+// Function untuk show image modal
+function showImageModal(imageUrl) {
+    document.getElementById('modalImage').src = imageUrl;
+    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+    modal.show();
+}
+
+// Function untuk show jurnal modal
+function showJurnalModal(jurnal) {
+    document.getElementById('modalJurnalToday').textContent = jurnal;
+    const modal = new bootstrap.Modal(document.getElementById('jurnalModalToday'));
+    modal.show();
+}
 </script>
 @endsection

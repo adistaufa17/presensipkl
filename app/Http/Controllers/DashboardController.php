@@ -122,14 +122,36 @@ class DashboardController extends Controller
 
     public function siswa()
     {
-        // Ambil tagihan yang belum dibayar (max 3)
-        $tagihanBelumBayar = \App\Models\Pembayaran::where('user_id', auth()->id())
-            ->where('status', 'belum_bayar')
-            ->orderBy('tenggat', 'asc')
-            ->take(3)
-            ->get();
+        $userId = auth()->id();
 
-        return view('siswa/dashboard', compact('tagihanBelumBayar'));
+        // Ambil semua tagihan
+        $semuaTagihan = \App\Models\Tagihan::orderBy('tenggat', 'asc')->get();
+
+        // Filter hanya yang belum dibayar oleh user ini
+        $tagihanBelumBayar = $semuaTagihan->filter(function($tagihan) use ($userId) {
+            // Cek apakah user sudah bayar tagihan ini
+            $pembayaran = \App\Models\Pembayaran::where('user_id', $userId)
+                ->where('tagihan_id', $tagihan->id)
+                ->whereIn('status', ['diterima', 'pending'])
+                ->first();
+            
+            return !$pembayaran; // Return true jika belum ada pembayaran
+        })->take(3);
+        
+        // Ambil data presensi untuk kalender
+        $presensiData = \App\Models\Presensi::where('user_id', auth()->id())
+            ->whereYear('tanggal', date('Y'))
+            ->get()
+            ->keyBy('tanggal')
+            ->map(function($p) {
+                return [
+                    'status' => $p->status, 
+                    'jam_masuk' => $p->jam_masuk, 
+                    'jam_keluar' => $p->jam_keluar
+                ];
+            });
+        
+        return view('siswa.dashboard', compact('tagihanBelumBayar', 'presensiData'));
     }
 
     public function getRealtimeData()

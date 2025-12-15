@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         if ($user->role === 'siswa') {
-            return redirect()->intended('/pembayaran/dashboardsiswa');
+            return redirect()->intended('/siswa/dashboard');
         }
 
         // fallback (jaga-jaga)

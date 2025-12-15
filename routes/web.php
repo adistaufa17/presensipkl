@@ -130,4 +130,7 @@ Route::middleware(['auth'])->group(function () {
     // Rekap Presensi
     Route::get('/presensi/rekap', [PresensiController::class, 'rekap'])
         ->name('presensi.rekap');
+
+    Route::get('/presensi/detail/{id}', [PresensiController::class, 'detail'])->name('presensi.detail');
+
 });
