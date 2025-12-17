@@ -23,10 +23,34 @@
 
         <div class="mb-3">
             <label>Password</label>
-            <input type="password" name="password" class="form-control" required>
+            <div class="input-group">
+                <input type="password" name="password" id="password" class="form-control" required>
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                    <i class="bi bi-eye" id="eyeIcon"></i>
+                </button>
+            </div>
         </div>
+
 
         <button class="btn btn-primary">Simpan</button>
     </form>
 </div>
+
+<script>
+function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.remove('bi-eye');
+        eyeIcon.classList.add('bi-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('bi-eye-slash');
+        eyeIcon.classList.add('bi-eye');
+    }
+}
+</script>
+
 @endsection

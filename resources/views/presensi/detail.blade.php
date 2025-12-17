@@ -86,10 +86,11 @@
                     <h5 class="fw-bold mb-0">📸 Foto Selfie Saat Masuk</h5>
                 </div>
                 <div class="card-body text-center">
-                    <img src="{{ $presensi->foto_masuk_url }}" 
-                         class="img-fluid rounded border" 
-                         style="max-height: 400px; object-fit: cover;"
-                         alt="Foto Presensi">
+                    <img src="{{ asset('storage/' . $presensi->foto_masuk) }}" 
+                        class="img-fluid rounded border" 
+                        style="max-height: 400px; object-fit: cover;"
+                        alt="Foto Presensi">
+
                     <p class="text-muted mt-2 mb-0">
                         <small>Diambil pada {{ \Carbon\Carbon::parse($presensi->jam_masuk)->format('H:i:s, d F Y') }}</small>
                     </p>
