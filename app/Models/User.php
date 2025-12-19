@@ -15,7 +15,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role'
+        'role',
+        'pembimbing_id'
     ];
 
     protected $hidden = [
@@ -27,16 +28,24 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
         ];
     }
 
-     public function pembayarans()
+    public function pembayarans()
     {
         return $this->hasMany(Pembayaran::class);
     }
 
-    // Helper method untuk cek role
+    public function presensis()
+    {
+        return $this->hasMany(Presensi::class);
+    }
+
+    public function tagihans()
+    {
+        return $this->hasMany(Tagihan::class);
+    }
+
     public function isPembimbing()
     {
         return $this->role === 'pembimbing';
@@ -46,4 +55,25 @@ class User extends Authenticatable
     {
         return $this->role === 'siswa';
     }
+
+    public function scopeSiswa($query)
+    {
+        return $query->where('role', 'siswa');
+    }
+
+    public function scopePembimbing($query)
+    {
+        return $query->where('role', 'pembimbing');
+    }
+
+    public function pembimbing()
+    {
+        return $this->belongsTo(User::class, 'pembimbing_id');
+    }
+
+    public function siswaBimbingan()
+    {
+        return $this->hasMany(User::class, 'pembimbing_id');
+    }
+
 }

@@ -2,78 +2,92 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pembayaran;
 use App\Models\User;
 use App\Models\Tagihan;
+use App\Models\Presensi;
+use App\Models\Pembayaran;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class PembayaranController extends Controller
 {
-    
+  
     public function index()
     {
-        // Ambil semua pembayaran milik siswa yang login
-        // Diurutkan berdasarkan bulan dan tanggal dibuat
         $payments = Pembayaran::where('user_id', Auth::id())
             ->orderBy('bulan', 'asc')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('pembayaran.siswa_index', compact('payments'));
+        return view('pembayaran.siswa-index', compact('payments'));
     }
 
     public function bayar(Request $request)
     {
-        // Validasi input
+        // Validasi input dasar
         $request->validate([
             'id' => 'required|exists:pembayarans,id',
             'metode' => 'required|in:cash,transfer',
-            'bukti' => 'nullable|image|mimes:jpg,jpeg,png|max:2048' // Max 2MB
         ]);
 
-        // Ambil data pembayaran
         $pembayaran = Pembayaran::findOrFail($request->id);
 
-        // SECURITY: Cek apakah pembayaran ini milik user yang login
         if ($pembayaran->user_id !== Auth::id()) {
             return back()->with('error', 'Anda tidak memiliki akses ke pembayaran ini!');
         }
 
-        // Cek apakah pembayaran sudah diterima (tidak boleh bayar ulang)
         if ($pembayaran->status === 'diterima') {
             return back()->with('error', 'Pembayaran ini sudah diterima dan tidak bisa diubah!');
         }
 
-        // Inisialisasi variabel bukti
-        $buktiPath = $pembayaran->bukti; // Simpan bukti lama jika ada
+        $buktiPath = $pembayaran->bukti;
 
-        // Jika metode transfer, WAJIB upload bukti
         if ($request->metode === 'transfer') {
             $request->validate([
                 'bukti' => 'required|image|mimes:jpg,jpeg,png|max:2048'
             ], [
-                'bukti.required' => 'Bukti transfer wajib diupload untuk metode transfer!',
+                'bukti.required' => 'Bukti transfer wajib diupload!',
                 'bukti.image' => 'File harus berupa gambar!',
                 'bukti.mimes' => 'Format gambar harus JPG, JPEG, atau PNG!',
                 'bukti.max' => 'Ukuran gambar maksimal 2MB!'
             ]);
 
-            // Hapus bukti lama jika ada (untuk bayar ulang)
+            // Hapus bukti lama jika ada
             if ($pembayaran->bukti && Storage::disk('public')->exists($pembayaran->bukti)) {
                 Storage::disk('public')->delete($pembayaran->bukti);
             }
 
-            // Upload bukti baru
-            $buktiPath = $request->file('bukti')->store('bukti_pembayaran', 'public');
+            // ⚠️ FIX: Upload bukti baru dengan nama unik
+            $file = $request->file('bukti');
+            $fileName = 'bukti_' . time() . '_' . Auth::id() . '.' . $file->getClientOriginalExtension();
+            $buktiPath = $file->storeAs('bukti_pembayaran', $fileName, 'public');
+        }
+
+        // Jika metode cash, boleh tidak upload bukti (opsional)
+        if ($request->metode === 'cash' && $request->hasFile('bukti')) {
+            $request->validate([
+                'bukti' => 'image|mimes:jpg,jpeg,png|max:2048'
+            ]);
+
+            // Hapus bukti lama jika ada
+            if ($pembayaran->bukti && Storage::disk('public')->exists($pembayaran->bukti)) {
+                Storage::disk('public')->delete($pembayaran->bukti);
+            }
+
+            // Upload bukti
+            $file = $request->file('bukti');
+            $fileName = 'bukti_' . time() . '_' . Auth::id() . '.' . $file->getClientOriginalExtension();
+            $buktiPath = $file->storeAs('bukti_pembayaran', $fileName, 'public');
         }
 
         // Update data pembayaran
         $pembayaran->update([
             'metode' => $request->metode,
             'bukti' => $buktiPath,
-            'status' => 'pending', // Status jadi pending menunggu approval
+            'status' => 'pending',
             'tanggal_bayar' => now(),
         ]);
 
@@ -82,35 +96,79 @@ class PembayaranController extends Controller
 
     public function dashboardSiswa()
     {
-        $tagihanBelumBayar = Pembayaran::where('user_id', auth()->id())
+        $userId = auth()->id();
+        $today = Carbon::today();
+
+        $presensiHariIni = Presensi::where('user_id', $userId)
+            ->whereDate('tanggal', $today)
+            ->first();
+
+        $summary = [
+            'hadir' => Presensi::where('user_id', $userId)->where('status', 'hadir')->count(),
+            'izin_total' => Presensi::where('user_id', $userId)->whereIn('status', ['izin', 'sakit'])->count(),
+            'alpa' => Presensi::where('user_id', $userId)->where('status', 'alpa')->count(),
+        ];
+
+        $totalHari = Presensi::where('user_id', $userId)->count();
+        $persentaseHadir = $totalHari > 0 ? ($summary['hadir'] / $totalHari) * 100 : 0;
+
+        // Grafik Jan–Des
+        $dataGrafik = [];
+        for ($bulan = 1; $bulan <= 12; $bulan++) {
+            $total = Presensi::where('user_id', $userId)
+                ->whereMonth('tanggal', $bulan)
+                ->where('status', 'hadir')
+                ->count();
+
+            $dataGrafik[] = [
+                'label' => Carbon::create()->month($bulan)->translatedFormat('M'),
+                'total' => $total,
+                'height' => min(100, $total * 5) . '%',
+                'color' => $total > 20 ? 'bg-success' : ($total >= 10 ? 'bg-primary' : 'bg-warning'),
+            ];
+        }
+
+        $tagihanBelumBayar = Pembayaran::where('user_id', $userId)
             ->where('status', 'belum_bayar')
             ->orderBy('tenggat', 'asc')
-            ->limit(3)
+            ->take(3)
             ->get();
-        return view('pembayaran.dashboardsiswa', compact('tagihanBelumBayar'));
+
+        return view('siswa.dashboard', compact(
+            'presensiHariIni',
+            'summary',
+            'dataGrafik',
+            'persentaseHadir',
+            'tagihanBelumBayar'
+        ));
     }
 
     public function dashboard()
     {
-        // Hitung statistik pembayaran
-        $totalTagihan = Pembayaran::count();
-        $belumBayar = Pembayaran::where('status', 'belum_bayar')->count();
-        $pending = Pembayaran::where('status', 'pending')->count();
-        $diterima = Pembayaran::where('status', 'diterima')->count();
-        $ditolak = Pembayaran::where('status', 'ditolak')->count();
+        $siswaIds = User::where('role', 'siswa')->pluck('id');
 
-        // Hitung total nominal yang sudah diterima
-        $totalNominalDiterima = Pembayaran::where('status', 'diterima')->sum('nominal');
+        $totalTagihan = Pembayaran::whereIn('user_id', $siswaIds)->count();
+        $belumBayar = Pembayaran::whereIn('user_id', $siswaIds)->where('status', 'belum_bayar')->count();
+        $pending = Pembayaran::whereIn('user_id', $siswaIds)->where('status', 'pending')->count();
+        $diterima = Pembayaran::whereIn('user_id', $siswaIds)->where('status', 'diterima')->count();
+        $ditolak = Pembayaran::whereIn('user_id', $siswaIds)->where('status', 'ditolak')->count();
 
-        // Ambil 10 pembayaran pending terbaru untuk quick access
+        // Total nominal yang sudah diterima
+        $totalNominalDiterima = Pembayaran::whereIn('user_id', $siswaIds)
+            ->where('status', 'diterima')
+            ->sum('nominal');
+
+        // Pembayaran pending terbaru
         $pendingPayments = Pembayaran::with('user')
+            ->whereIn('user_id', $siswaIds)
             ->where('status', 'pending')
             ->orderBy('tanggal_bayar', 'desc')
             ->take(10)
             ->get();
 
-        // Statistik per siswa (siswa yang paling banyak telat bayar)
+        // Siswa yang paling banyak telat bayar
         $siswaTelat = Pembayaran::with('user')
+            ->whereIn('user_id', $siswaIds)
             ->where('status', 'belum_bayar')
             ->whereDate('tenggat', '<', now())
             ->get()
@@ -144,7 +202,6 @@ class PembayaranController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Grouping berdasarkan status untuk tampilan yang lebih rapi (opsional)
         $groupedPayments = [
             'pending' => $payments->where('status', 'pending'),
             'belum_bayar' => $payments->where('status', 'belum_bayar'),
@@ -155,18 +212,12 @@ class PembayaranController extends Controller
         return view('pembayaran.semua', compact('payments', 'groupedPayments'));
     }
 
-    /**
-     * Menampilkan detail pembayaran
-     * Route: GET /pembayaran/{id}
-     */
     public function detail($id)
     {
-        // Ambil pembayaran dengan relasi user dan tagihan
         $payment = Pembayaran::with('user', 'tagihan')->findOrFail($id);
 
-        // Ambil history pembayaran siswa ini untuk referensi
         $historyPembayaran = Pembayaran::where('user_id', $payment->user_id)
-            ->where('id', '!=', $id) // Exclude pembayaran saat ini
+            ->where('id', '!=', $id)
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
@@ -176,7 +227,6 @@ class PembayaranController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        // Validasi input
         $request->validate([
             'status' => 'required|in:pending,diterima,ditolak',
             'keterangan_pembimbing' => 'nullable|string|max:500'
@@ -186,21 +236,18 @@ class PembayaranController extends Controller
             'keterangan_pembimbing.max' => 'Keterangan maksimal 500 karakter!'
         ]);
 
-        // Ambil data pembayaran
         $pembayaran = Pembayaran::findOrFail($id);
 
-        // Jika status belum bayar, tidak bisa diupdate
         if ($pembayaran->status === 'belum_bayar') {
             return back()->with('error', 'Pembayaran ini belum dilakukan oleh siswa!');
         }
 
-        // Update status
         $pembayaran->update([
             'status' => $request->status,
             'keterangan_pembimbing' => $request->keterangan_pembimbing,
         ]);
 
-        // Pesan sukses berdasarkan status
+        // Pesan sukses
         $message = match($request->status) {
             'diterima' => '✅ Pembayaran berhasil diterima!',
             'ditolak' => '❌ Pembayaran ditolak. Siswa dapat mengupload ulang.',
@@ -211,22 +258,15 @@ class PembayaranController extends Controller
         return back()->with('success', $message);
     }
 
-    /**
-     * Lihat pembayaran per siswa (untuk pembimbing)
-     * Route: GET /pembayaran/siswa/{user_id}
-     */
     public function bySiswa($userId)
     {
-        // Cek apakah user adalah siswa
         $siswa = User::where('id', $userId)->where('role', 'siswa')->firstOrFail();
 
-        // Ambil semua pembayaran siswa
         $payments = Pembayaran::where('user_id', $userId)
             ->orderBy('bulan', 'asc')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Hitung statistik siswa ini
         $stats = [
             'total' => $payments->count(),
             'belum_bayar' => $payments->where('status', 'belum_bayar')->count(),
@@ -239,33 +279,10 @@ class PembayaranController extends Controller
         return view('pembayaran.by_siswa', compact('siswa', 'payments', 'stats'));
     }
 
-    /**
-     * Hapus pembayaran (untuk pembimbing, jika ada kesalahan)
-     * Route: DELETE /pembayaran/{id}
-     */
-    public function destroy($id)
-    {
-        $pembayaran = Pembayaran::findOrFail($id);
-
-        // Hapus bukti pembayaran jika ada
-        if ($pembayaran->bukti && Storage::disk('public')->exists($pembayaran->bukti)) {
-            Storage::disk('public')->delete($pembayaran->bukti);
-        }
-
-        $pembayaran->delete();
-
-        return back()->with('success', 'Pembayaran berhasil dihapus!');
-    }
-
-    /**
-     * Reset pembayaran ke status belum bayar (untuk pembimbing)
-     * Route: POST /pembayaran/{id}/reset
-     */
     public function reset($id)
     {
         $pembayaran = Pembayaran::findOrFail($id);
 
-        // Hapus bukti pembayaran jika ada
         if ($pembayaran->bukti && Storage::disk('public')->exists($pembayaran->bukti)) {
             Storage::disk('public')->delete($pembayaran->bukti);
         }
@@ -280,5 +297,19 @@ class PembayaranController extends Controller
         ]);
 
         return back()->with('success', 'Pembayaran berhasil direset ke status belum bayar!');
+    }
+
+    public function destroy($id)
+    {
+        $pembayaran = Pembayaran::findOrFail($id);
+
+        // Hapus bukti pembayaran jika ada
+        if ($pembayaran->bukti && Storage::disk('public')->exists($pembayaran->bukti)) {
+            Storage::disk('public')->delete($pembayaran->bukti);
+        }
+
+        $pembayaran->delete();
+
+        return back()->with('success', 'Pembayaran berhasil dihapus!');
     }
 }

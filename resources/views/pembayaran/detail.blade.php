@@ -74,11 +74,16 @@
                         <p><strong>Tanggal Pembayaran:</strong> {{ $payment->tanggal_bayar->format('d M Y H:i') }}</p>
                     @endif
 
+                    {{-- BAGIAN BUKTI PEMBAYARAN --}}
                     @if($payment->bukti)
                         <p><strong>Bukti Pembayaran:</strong></p>
                         <a href="{{ asset('storage/'.$payment->bukti) }}" target="_blank">
-                            <img src="{{ asset('storage/'.$payment->bukti) }}" class="img-fluid rounded shadow" style="max-width: 400px;">
+                            <img src="{{ asset('storage/'.$payment->bukti) }}" 
+                                class="img-fluid rounded shadow" 
+                                style="max-width: 400px;">
                         </a>
+                    @else
+                        <p class="text-muted">Belum ada bukti pembayaran</p>
                     @endif
 
                     @if($payment->keterangan_pembimbing)
@@ -89,6 +94,7 @@
                     @endif
                 </div>
             </div>
+
 
             {{-- FORM UPDATE STATUS --}}
             @if($payment->status == 'pending')
@@ -149,14 +155,6 @@
                     </form>
                     @endif
 
-                    <form action="{{ route('pembayaran.destroy', $payment->id) }}" method="POST" class="d-inline"
-                          onsubmit="return confirm('Yakin ingin menghapus pembayaran ini? Tindakan ini tidak bisa dibatalkan!')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            🗑️ Hapus Pembayaran
-                        </button>
-                    </form>
                 </div>
             </div>
 

@@ -12,7 +12,7 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
-    <!-- Bootstrap 5 CSS -->
+    <!-- Bootstrap 5 CSS  -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Bootstrap Icons -->
@@ -269,7 +269,7 @@
 
             <nav class="sidebar-menu">
                 @if(auth()->user()->role === 'siswa')
-                    <a href="{{ route('pembayaran.dashboardsiswa') }}" class="sidebar-item {{ request()->routeIs('pembayaran.dashboardsiswa') ? 'active' : '' }}">
+                    <a href="{{ route('siswa.dashboard') }}" class="sidebar-item {{ request()->routeIs('siswa.dashboard') ? 'active' : '' }}">
                         <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="3" width="7" height="7"></rect>
                             <rect x="14" y="3" width="7" height="7"></rect>
@@ -287,15 +287,15 @@
                         <span>Pembayaran</span>
                     </a>
 
-                    <a href="#" class="sidebar-item">
+                    <a href="{{ route('presensi.riwayat') }}" class="sidebar-item {{ request()->routeIs('presensi.riwayat') ? 'active' : '' }}">
                         <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                            <path d="M3 3h18v18H3z"></path>
+                            <path d="M3 9h18"></path>
+                            <path d="M9 3v18"></path>
                         </svg>
-                        <span>Detail Riwayat</span>
+                        <span>Riwayat Presensi</span>
                     </a>
+
                 @elseif(auth()->user()->role === 'pembimbing')
                     <a href="{{ route('pembimbing.dashboard') }}" class="sidebar-item {{ request()->routeIs('pembimbing.dashboard') ? 'active' : '' }}">
                         <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
