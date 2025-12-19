@@ -14,21 +14,38 @@ return new class extends Migration
         Schema::create('pembayarans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('jenis');
+
+            // Tagihan dibuat pembimbing
+            $table->string('jenis')->nullable(); // kos / alat praktik / lain
             $table->integer('nominal');
+            $table->integer('bulan'); // 1 - 4
+            $table->date('tenggat');
+
+            // Diisi siswa
+            $table->string('metode')->nullable(); // cash, transfer
             $table->string('bukti')->nullable();
+            $table->foreignId('tagihan_id')->nullable()->constrained('tagihans');
+            $table->string('nama_tagihan')->nullable();
+            $table->string('tanggal_bayar')->nullable();
+
+            $table->string('kategori');
+            
+            // Status
+            $table->string('status_siswa')->default('belum_bayar'); // belum_bayar, pending
             $table->string('status')->default('pending'); // pending, diterima, ditolak
+
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('pembayarans');
+        Schema::table('pembayarans', function (Blueprint $table) {
+            //
+        });
     }
 };
