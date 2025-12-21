@@ -13,28 +13,21 @@ class Pembayaran extends Model
     protected $fillable = [
         'user_id',
         'tagihan_id',
-        'nama_tagihan',
-        'kategori',
-        'nominal',
-        'bulan',
-        'tenggat',
-        'status',
+        'status', 
         'bukti',
         'metode',
         'tanggal_bayar',
         'keterangan_pembimbing',
     ];
 
-
+    public function tagihan()
+    {
+        return $this->belongsTo(Tagihan::class, 'tagihan_id');
+    }
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function tagihan()
-    {
-        return $this->belongsTo(Tagihan::class, 'tagihan_id');
     }
 
     protected $casts = [

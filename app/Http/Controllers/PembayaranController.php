@@ -16,14 +16,15 @@ class PembayaranController extends Controller
 {
   
     public function index()
-    {
-        $payments = Pembayaran::where('user_id', Auth::id())
-            ->orderBy('bulan', 'asc')
-            ->orderBy('created_at', 'desc')
-            ->get();
+{
+    // Mengambil data dari tabel pembayarans dengan relasi tagihan
+    $payments = Pembayaran::with('tagihan')
+        ->where('user_id', auth()->id())
+        ->get();
 
-        return view('pembayaran.siswa-index', compact('payments'));
-    }
+    return view('pembayaran.siswa-index', compact('payments'));
+
+}
 
     public function bayar(Request $request)
     {
@@ -127,15 +128,17 @@ class PembayaranController extends Controller
                 'color' => $total > 20 ? 'bg-success' : ($total >= 10 ? 'bg-primary' : 'bg-warning'),
             ];
         }
-
-        $tagihanBelumBayar = Pembayaran::where('user_id', $userId)
-            ->where('status', 'belum_bayar')
-            ->orderBy('tenggat', 'asc')
-            ->take(3)
-            ->get();
+    
+    // Pastikan pakai with('tagihan') agar data nama/nominal muncul
+        $tagihanBelumBayar = Pembayaran::with('tagihan')
+        ->where('user_id', $userId)
+        ->where('status', 'belum_bayar')
+        ->orderBy('created_at', 'desc')
+        ->take(3)
+        ->get();
 
         return view('siswa.dashboard', compact(
-            'presensiHariIni',
+            'presensiHariIni', 
             'summary',
             'dataGrafik',
             'persentaseHadir',

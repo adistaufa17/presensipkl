@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page_title', 'Riwayat')
+
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

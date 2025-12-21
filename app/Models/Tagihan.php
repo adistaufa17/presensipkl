@@ -35,7 +35,7 @@ class Tagihan extends Model
     public function scopeBelumBayar($query)
     {
         return $query->where('status', 'belum_bayar');
-    }
+    }   
 
     /**
      * Scope: Tagihan pending

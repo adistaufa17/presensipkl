@@ -1,231 +1,184 @@
 @extends('layouts.app')
 
+@section('page_title', 'Pembayaran')
+
+{{ dd($payments) }}
+
 @section('content')
-<div class="container">
-    <h2 class="fw-bold mb-4">💰 Tagihan Saya</h2>
+<style>
+    :root {
+        --card-radius: 15px;
+        --soft-gray: #f8f9fa;
+        --border-color: #e0e0e0;
+        --primary-dark: #212529;
+    }
 
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+    .stat-card {
+        border-radius: var(--card-radius);
+        border: 1px solid var(--border-color);
+        transition: transform 0.2s;
+    }
 
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+    .payment-card {
+        border-radius: var(--card-radius);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
 
-    {{-- STATISTIK RINGKAS --}}
-    <div class="row mb-4">
+    .payment-card .card-header {
+        background: white;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.25rem;
+    }
+
+    .payment-card .card-body {
+        padding: 1.25rem;
+    }
+
+    .info-box {
+        background-color: var(--soft-gray);
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    /* Form Bayar yang disembunyikan (Dropdown Effect) */
+    .form-pembayaran {
+        display: none;
+        border-top: 1px solid var(--border-color);
+        background-color: #fff;
+        padding-top: 15px;
+    }
+
+    .btn-pay-toggle {
+        border-radius: 20px;
+        padding: 5px 25px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">Tagihan Keuangan</h2>
+
+    {{-- STATISTIK RINGKAS (Gaya Wireframe) --}}
+    <div class="row mb-5">
+        @php
+            $stats = [
+                ['label' => 'Belum Bayar', 'count' => $payments->where('status', 'belum_bayar')->count(), 'color' => '#6c757d'],
+                ['label' => 'Pending', 'count' => $payments->where('status', 'pending')->count(), 'color' => '#ffc107'],
+                ['label' => 'Diterima', 'count' => $payments->where('status', 'diterima')->count(), 'color' => '#198754'],
+                ['label' => 'Ditolak', 'count' => $payments->where('status', 'ditolak')->count(), 'color' => '#dc3545'],
+            ];
+        @endphp
+        @foreach($stats as $stat)
         <div class="col-md-3 mb-3">
-            <div class="card bg-secondary text-white text-center shadow-sm">
-                <div class="card-body py-3">
-                    <h6 class="mb-1">Belum Bayar</h6>
-                    <h3 class="mb-0">{{ $payments->where('status', 'belum_bayar')->count() }}</h3>
-                </div>
+            <div class="stat-card p-3 text-center" style="background-color: {{ $stat['color'] }}; color: {{ $stat['label'] == 'Pending' ? 'black' : 'white' }}">
+                <div class="small fw-bold opacity-75">{{ $stat['label'] }}</div>
+                <h2 class="mb-0 fw-bold">{{ $stat['count'] }}</h2>
             </div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card bg-warning text-dark text-center shadow-sm">
-                <div class="card-body py-3">
-                    <h6 class="mb-1">Pending</h6>
-                    <h3 class="mb-0">{{ $payments->where('status', 'pending')->count() }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card bg-success text-white text-center shadow-sm">
-                <div class="card-body py-3">
-                    <h6 class="mb-1">Diterima</h6>
-                    <h3 class="mb-0">{{ $payments->where('status', 'diterima')->count() }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card bg-danger text-white text-center shadow-sm">
-                <div class="card-body py-3">
-                    <h6 class="mb-1">Ditolak</h6>
-                    <h3 class="mb-0">{{ $payments->where('status', 'ditolak')->count() }}</h3>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 
-    {{-- DAFTAR TAGIHAN DALAM BENTUK CARD --}}
+    {{-- DAFTAR TAGIHAN --}}
     <div class="row">
         @forelse ($payments as $p)
         <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm h-100 {{ $p->status == 'belum_bayar' && $p->tenggat < now() ? 'border-danger' : '' }}">
-                <div class="card-header {{ $p->status == 'belum_bayar' ? 'bg-secondary text-white' : ($p->status == 'pending' ? 'bg-warning' : ($p->status == 'diterima' ? 'bg-success text-white' : 'bg-danger text-white')) }}">
-                    <h5 class="mb-0">{{ $p->nama_tagihan }}</h5>
+            <div class="payment-card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold text-muted">Detail Tagihan</h6>
+                    <i class="bi bi-wallet2 text-muted"></i>
                 </div>
+                
                 <div class="card-body">
-                    <div class="mb-3">
-                        @if($p->kategori == 'kos')
-                            <span class="badge bg-info mb-2">🏠 Kos</span>
-                        @elseif($p->kategori == 'alat_praktik')
-                            <span class="badge bg-warning text-dark mb-2">🔧 Alat Praktik</span>
-                        @else
-                            <span class="badge bg-secondary mb-2">📦 Lainnya</span>
-                        @endif
-                    </div>
+    <div class="info-box">
+        <small class="text-muted d-block">Tujuan Pembayaran:</small>
+        {{-- Panggil 'nama' dari relasi tagihan --}}
+        <span class="fw-bold">{{ $p->tagihan->nama ?? 'Tagihan Tanpa Nama' }}</span>
+        
+        <small class="text-muted d-block mt-2">Kategori:</small>
+        <span class="badge bg-light text-dark border">
+            {{ strtoupper($p->tagihan->kategori ?? 'UMUM') }}
+        </span>
+    </div>
 
-                    <table class="table table-sm table-borderless">
-                        <tr>
-                            <td class="text-muted">Nominal:</td>
-                            <td class="text-end"><strong class="text-primary">Rp {{ number_format($p->nominal, 0, ',', '.') }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Bulan:</td>
-                            <td class="text-end"><strong>Bulan {{ $p->bulan }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Tenggat:</td>
-                            <td class="text-end">
-                                <strong>{{ \Carbon\Carbon::parse($p->tenggat)->format('d M Y') }}</strong>
-                                @if($p->status == 'belum_bayar' && $p->tenggat < now())
-                                    <br><small class="text-danger fw-bold">⚠️ TELAT!</small>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Status:</td>
-                            <td class="text-end">
-                                @php
-                                    $badgeMap = [
-                                        'belum_bayar' => 'bg-secondary',
-                                        'pending' => 'bg-warning text-dark',
-                                        'diterima' => 'bg-success',
-                                        'ditolak' => 'bg-danger',
-                                    ];
-                                    $badge = $badgeMap[$p->status] ?? 'bg-secondary';
-                                @endphp
-                                <span class="badge {{ $badge }}">
-                                    {{ ucfirst(str_replace('_', ' ', $p->status)) }}
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
+    <div class="mb-3">
+        <small class="text-muted">Total Tagihan:</small>
+        {{-- Panggil 'nominal' dari relasi tagihan --}}
+        <h3 class="fw-bold mb-0">Rp {{ number_format($p->tagihan->nominal ?? 0, 0, ',', '.') }}</h3>
+        
+        {{-- Tampilkan tenggat dari relasi tagihan --}}
+        <small class="text-danger fw-bold">
+            Tenggat: {{ \Carbon\Carbon::parse($p->tagihan->tenggat)->format('d/m/Y') }}
+        </small>
+    </div>
 
-                    @if($p->status == 'ditolak' && $p->keterangan_pembimbing)
-                        <div class="alert alert-danger mt-2 mb-0" role="alert">
-                            <small><strong>Alasan Ditolak:</strong><br>{{ $p->keterangan_pembimbing }}</small>
-                        </div>
-                    @endif
-                </div>
-                <div class="card-footer bg-white">
-                    @if($p->status == 'belum_bayar' || $p->status == 'ditolak')
-                        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modalBayar{{ $p->id }}">
-                            💳 Bayar Sekarang
-                        </button>
-                    @elseif($p->status == 'pending')
-                        <button class="btn btn-warning w-100" disabled>
-                            ⏳ Menunggu Konfirmasi
-                        </button>
-                    @elseif($p->status == 'diterima')
-                        <button class="btn btn-success w-100" disabled>
-                            ✅ Pembayaran Diterima
-                        </button>
-                    @endif
-                </div>
-            </div>
-        </div>
+    {{-- Status tetap ambil dari $p karena status ada di tabel pembayarans --}}
+    @if($p->status == 'belum_bayar' || $p->status == 'ditolak')
+        <button class="btn btn-dark w-100 btn-pay-toggle mt-2" onclick="toggleFormBayar({{ $p->id }})">
+            BAYAR
+        </button>
+    @elseif($p->status == 'pending')
+        <div class="alert alert-warning text-center py-2 mb-0">⏳ Menunggu Konfirmasi</div>
+    @else
+        <div class="alert alert-success text-center py-2 mb-0">✅ Lunas</div>
+    @endif
+</div>
 
-        {{-- MODAL FORM BAYAR --}}
-        <div class="modal fade" id="modalBayar{{ $p->id }}" tabindex="-1" aria-labelledby="modalBayarLabel{{ $p->id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalBayarLabel{{ $p->id }}">💳 Bayar: {{ $p->nama_tagihan }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form action="{{ route('pembayaran.bayar') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        {{-- SESUAI CONTROLLER: gunakan 'id' --}}
-                        <input type="hidden" name="id" value="{{ $p->id }}">
-                        
-                        <div class="modal-body">
-                            <div class="alert alert-info">
-                                <strong>Nominal:</strong> Rp {{ number_format($p->nominal, 0, ',', '.') }}<br>
-                                <strong>Tenggat:</strong> {{ \Carbon\Carbon::parse($p->tenggat)->format('d M Y') }}
-                            </div>
+                    {{-- FORM DROPDOWN (Mirip Wireframe Samping) --}}
+                    <div id="formBayar{{ $p->id }}" class="form-pembayaran mt-3">
+                        <form action="{{ route('pembayaran.bayar') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" name="id" value="{{ $p->id }}">
 
                             <div class="mb-3">
-                                <label for="metode{{ $p->id }}" class="form-label fw-bold">Metode Pembayaran <span class="text-danger">*</span></label>
-                                <select class="form-select" id="metode{{ $p->id }}" name="metode" required onchange="toggleBukti{{ $p->id }}(this.value)">
-                                    <option value="">-- Pilih Metode --</option>
-                                    <option value="cash">💵 Cash/Tunai</option>
-                                    <option value="transfer">🏦 Transfer Bank</option>
+                                <label class="small fw-bold text-muted">Payment Method</label>
+                                <select class="form-select form-select-sm" name="metode" required onchange="handleMethodChange({{ $p->id }}, this.value)">
+                                    <option value="">Pilih Metode</option>
+                                    <option value="cash">Cash</option>
+                                    <option value="transfer">Transfer</option>
                                 </select>
                             </div>
 
-                            <div class="mb-3" id="buktiBayar{{ $p->id }}" style="display: none;">
-                                <label for="bukti{{ $p->id }}" class="form-label fw-bold">
-                                    Upload Bukti Pembayaran <span class="text-danger" id="required{{ $p->id }}" style="display: none;">*</span>
-                                </label>
-                                <input type="file" class="form-control" id="bukti{{ $p->id }}" name="bukti" accept="image/jpeg,image/png,image/jpg">
-                                <small class="text-muted">Format: JPG, PNG, JPEG (Max 2MB)</small>
-                                <small class="text-danger d-block mt-1" id="info{{ $p->id }}" style="display: none;">
-                                    <strong>⚠️ WAJIB upload bukti untuk metode transfer!</strong>
-                                </small>
+                            <div class="mb-3" id="uploadGroup{{ $p->id }}">
+                                <label class="small fw-bold text-muted">Kirim Bukti Pembayaran</label>
+                                <input type="file" class="form-control form-control-sm" name="bukti" id="inputBukti{{ $p->id }}">
+                                <small class="text-muted" style="font-size: 0.7rem;">Untuk konfirmasi admin segera.</small>
                             </div>
 
-                            <div class="alert alert-warning">
-                                <small>
-                                    <strong>📝 Catatan:</strong><br>
-                                    • <strong>Cash/Tunai:</strong> Bukti pembayaran opsional<br>
-                                    • <strong>Transfer:</strong> Bukti transfer <strong>WAJIB</strong> diupload
-                                </small>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">❌ Batal</button>
-                            <button type="submit" class="btn btn-primary">💾 Kirim Pembayaran</button>
-                        </div>
-                    </form>
+                            <button type="submit" class="btn btn-dark btn-sm w-100 mt-2">KIRIM</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <script>
-            function toggleBukti{{ $p->id }}(metode) {
-                const buktiDiv = document.getElementById('buktiBayar{{ $p->id }}');
-                const buktiInput = document.getElementById('bukti{{ $p->id }}');
-                const requiredSign = document.getElementById('required{{ $p->id }}');
-                const infoText = document.getElementById('info{{ $p->id }}');
-                
-                if (metode === 'transfer') {
-                    // Transfer: WAJIB upload bukti
-                    buktiDiv.style.display = 'block';
-                    buktiInput.setAttribute('required', 'required');
-                    requiredSign.style.display = 'inline';
-                    infoText.style.display = 'block';
-                } else if (metode === 'cash') {
-                    // Cash: Bukti opsional
-                    buktiDiv.style.display = 'block';
-                    buktiInput.removeAttribute('required');
-                    requiredSign.style.display = 'none';
-                    infoText.style.display = 'none';
-                } else {
-                    // Belum pilih metode
-                    buktiDiv.style.display = 'none';
-                    buktiInput.removeAttribute('required');
-                }
-            }
-        </script>
         @empty
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-body text-center py-5">
-                    <h4 class="text-muted">📭 Belum ada tagihan</h4>
-                    <p class="text-muted">Anda belum memiliki tagihan yang perlu dibayar</p>
-                </div>
-            </div>
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">Tidak ada tagihan tertunggak.</p>
         </div>
         @endforelse
     </div>
 </div>
+
+<script>
+    function toggleFormBayar(id) {
+        const form = document.getElementById('formBayar' + id);
+        if (form.style.display === 'block') {
+            form.style.display = 'none';
+        } else {
+            // Sembunyikan form lain yang mungkin terbuka (optional)
+            document.querySelectorAll('.form-pembayaran').forEach(f => f.style.display = 'none');
+            form.style.display = 'block';
+        }
+    }
+
+    function handleMethodChange(id, method) {
+        const inputBukti = document.getElementById('inputBukti' + id);
+        if (method === 'transfer') {
+            inputBukti.setAttribute('required', 'required');
+        } else {
+            inputBukti.removeAttribute('required');
+        }
+    }
+</script>
 @endsection

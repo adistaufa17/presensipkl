@@ -68,54 +68,68 @@ class PresensiController extends Controller
 
 
     /**
-     * Absen Keluar dengan Jurnal Kegiatan
-     */
-    public function storeKeluar(Request $request)
-    {
-        $request->validate([
-            'jurnal_kegiatan' => 'required|string|min:50|max:1000',
-        ], [
-            'jurnal_kegiatan.required' => 'Jurnal kegiatan wajib diisi!',
-            'jurnal_kegiatan.min' => 'Jurnal kegiatan minimal 50 karakter.',
-            'jurnal_kegiatan.max' => 'Jurnal kegiatan maksimal 1000 karakter.',
-        ]);
+ * Absen Keluar dengan Jurnal Kegiatan
+ */
+public function storeKeluar(Request $request)
+{
+    // 1. Validasi Input
+    $request->validate([
+        'jurnal_kegiatan' => 'required|string|min:50|max:1000',
+    ], [
+        'jurnal_kegiatan.required' => 'Jurnal kegiatan wajib diisi!',
+        'jurnal_kegiatan.min' => 'Jurnal kegiatan minimal 50 karakter.',
+        'jurnal_kegiatan.max' => 'Jurnal kegiatan maksimal 1000 karakter.',
+    ]);
 
-        $now = Carbon::now('Asia/Jakarta');
-        $today = $now->toDateString();
-        $userId = auth()->id();
+    $now = Carbon::now('Asia/Jakarta');
+    $today = $now->toDateString();
+    $userId = auth()->id();
 
-        // Cari presensi hari ini
-        $presensi = Presensi::where('user_id', $userId)
-            ->where('tanggal', $today)
-            ->first();
+    // Cari presensi hari ini
+    $presensi = Presensi::where('user_id', $userId)
+        ->where('tanggal', $today)
+        ->first();
 
-        // Validasi: Belum absen masuk
-        if (!$presensi || !$presensi->jam_masuk) {
-            return back()->with('error', 'Anda belum absen masuk hari ini!');
-        }
-
-        // Validasi: Sudah absen keluar
-        if ($presensi->jam_keluar) {
-            return back()->with('error', 'Anda sudah absen keluar hari ini!');
-        }
-
-        // Validasi: Cek waktu minimal (6 jam kerja)
-        $jamMasuk = Carbon::parse($today . ' ' . $presensi->jam_masuk, 'Asia/Jakarta');
-        $jamKeluar = $now;
-        $durasi = $jamMasuk->diffInHours($jamKeluar);
-
-        if ($durasi < 6) {
-            return back()->with('error', 'Anda belum bisa absen keluar! Minimal 6 jam kerja.');
-        }
-
-        // Update jam keluar dan jurnal
-        $presensi->update([
-            'jam_keluar' => $jamKeluar->format('H:i:s'),
-            'jurnal_kegiatan' => $request->jurnal_kegiatan,
-        ]);
-
-        return back()->with('success', 'Presensi keluar berhasil! Jurnal kegiatan telah tersimpan. Hati-hati di jalan.');
+    // 2. Validasi: Belum absen masuk (Kembalikan JSON)
+    if (!$presensi || !$presensi->jam_masuk) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Anda belum absen masuk hari ini!'
+        ], 422);
     }
+
+    // 3. Validasi: Sudah absen keluar
+    if ($presensi->jam_keluar) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Anda sudah absen keluar hari ini!'
+        ], 422);
+    }
+
+    // 4. Validasi: Cek waktu minimal (6 jam kerja)
+    $jamMasuk = Carbon::parse($today . ' ' . $presensi->jam_masuk, 'Asia/Jakarta');
+    $jamKeluar = $now;
+    $durasi = $jamMasuk->diffInHours($jamKeluar);
+
+    if ($durasi < 6) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Anda belum bisa absen keluar! Minimal 6 jam kerja.'
+        ], 422);
+    }
+
+    // 5. Update jam keluar dan jurnal
+    $presensi->update([
+        'jam_keluar' => $jamKeluar->format('H:i:s'),
+        'jurnal_kegiatan' => $request->jurnal_kegiatan,
+    ]);
+
+    // 6. Kembalikan Response JSON Sukses
+    return response()->json([
+        'success' => true,
+        'message' => 'Presensi keluar berhasil! Jurnal kegiatan telah tersimpan.'
+    ]);
+}
 
     /**
      * Form Pengajuan Izin/Sakit
