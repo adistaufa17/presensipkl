@@ -2,83 +2,69 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Presensi extends Model
 {
-    use HasFactory;
-
+    protected $table = 'presensis'; 
+    
     protected $fillable = [
-        'user_id',
+        'siswa_id',
         'tanggal',
         'jam_masuk',
-        'jam_keluar',
-        'status',
-        'bukti_foto',
-        'keterangan',
         'foto_masuk',
+        'latitude_masuk',
+        'longitude_masuk',
+        'status_kehadiran', 
+        'keterangan_izin',
+        'bukti_izin',
+        'jam_pulang',
         'jurnal_kegiatan',
     ];
 
-    public function user()
-        {
-            return $this->belongsTo(User::class);
-        }
+    protected $casts = [
+        'tanggal' => 'date',
+        'jam_masuk' => 'datetime',
+        'jam_keluar' => 'datetime',
+    ];
 
-        /**
-         * Scope: Presensi hari ini
-         */
-        public function scopeToday($query)
-        {
-            return $query->where('tanggal', now()->toDateString());
-        }
+    public function siswa()
+    {
+        return $this->belongsTo(Siswa::class, 'siswa_id');
+    }
 
-        /**
-         * Scope: Presensi bulan ini
-         */
-        public function scopeThisMonth($query)
-        {
-            return $query->whereMonth('tanggal', now()->month)
-                        ->whereYear('tanggal', now()->year);
-        }
+    public function sekolah()
+    {
+        return $this->hasOneThrough(
+            \App\Models\Sekolah::class,
+            Siswa::class,
+            'id', 
+            'id',
+            'siswa_id',
+            'sekolah_id' 
+        );
+    }
 
-        /**
-         * Scope: Hanya status hadir
-         */
-        public function scopeHadir($query)
-        {
-            return $query->whereIn('status', ['hadir', 'terlambat']);
-        }
+    public function scopeToday($query)
+    {
+        return $query->whereDate('tanggal', today());
+    }
 
-        /**
-         * Accessor: Durasi kerja (jam)
-         */
-        public function getDurasiKerjaAttribute()
-        {
-            if (!$this->jam_masuk || !$this->jam_keluar) {
-                return 0;
-            }
+    public function scopeThisMonth($query)
+    {
+        return $query->whereMonth('tanggal', now()->month)
+                     ->whereYear('tanggal', now()->year);
+    }
 
-            $masuk = Carbon::parse($this->tanggal . ' ' . $this->jam_masuk);
-            $keluar = Carbon::parse($this->tanggal . ' ' . $this->jam_keluar);
-
-            return $masuk->diffInHours($keluar);
-        }
-
-        /**
-         * Accessor: Status Badge Color (untuk UI)
-         */
-        public function getStatusColorAttribute()
-        {
-            return match($this->status) {
-                'hadir' => 'success',
-                'terlambat' => 'warning',
-                'izin' => 'info',
-                'sakit' => 'info',
-                'alpa' => 'danger',
-                default => 'secondary'
-            };
-        }
-
+    public function getStatusKehadiranLabelAttribute()
+    {
+        return match($this->status_kehadiran) {
+            'hadir' => 'Hadir',
+            'telat' => 'Terlambat',
+            'izin' => 'Izin',
+            'sakit' => 'Sakit',
+            'alpha' => 'Tanpa Keterangan',
+            default => 'Tidak Diketahui'
+        };
+    }
 }

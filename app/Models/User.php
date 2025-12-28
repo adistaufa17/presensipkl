@@ -2,40 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Siswa;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
-
-    /**
-     * Kolom yang bisa diisi secara mass assignment
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'nama_lengkap', 'email', 'password', 'role',
     ];
 
-    /**
-     * Kolom yang disembunyikan saat serialization
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Cast tipe data kolom
-     */
-    protected function casts(): array
+    public function siswa()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+       return $this->hasOne(Siswa::class, 'user_id');
     }
 }

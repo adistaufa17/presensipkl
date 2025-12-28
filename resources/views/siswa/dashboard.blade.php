@@ -58,7 +58,7 @@
 
     /* Desktop Default */
     .col-left { grid-column: span 4; }
-    .col-center { grid-column: span 4; } /* Kurangi sedikit tengah */
+    .col-center { grid-column: span 4; }
     .col-right { grid-column: span 4; }
 
     @media (min-width: 1400px) {
@@ -77,7 +77,7 @@
     @media (max-width: 1100px) {
         .col-left { grid-column: span 5; }
         .col-center { grid-column: span 7; }
-        .col-right { grid-column: span 12; } /* Tagihan pindah ke bawah */
+        .col-right { grid-column: span 12; }
     }
 
     /* Mobile (Phone) */
@@ -190,7 +190,7 @@
         padding-top: 20px;
         display: flex;
         align-items: center;
-        justify-content: flex-end; /* Menjorok ke kanan */
+        justify-content: flex-end;
         color: var(--text-muted);
         text-decoration: none;
         font-size: 0.85rem;
@@ -201,20 +201,21 @@
         color: var(--primary-color);
         transition: ease 0.8s;
     }
+
     .empty-state-container {
-        flex-grow: 1; /* Mengambil semua ruang kosong di antara judul dan link 'see more' */
+        flex-grow: 1;
         display: flex;
-        align-items: center; /* Center Vertikal */
-        justify-content: center; /* Center Horizontal */
+        align-items: center;
+        justify-content: center;
         text-align: center;
     }
 
     /* TAGIHAN CARD */
-   .card-modern-tagihan {
+    .card-modern-tagihan {
         background: white;
         border: 1px solid var(--border-color);
         border-radius: 20px;
-        padding: 30px; /* Space luar yang lebih luas */
+        padding: 30px;
         height: 100%;
     }
 
@@ -239,7 +240,7 @@
 
     .tagihan-header {
         display: flex;
-        flex-direction: column; /* Default tumpuk ke bawah agar aman */
+        flex-direction: column;
         align-items: flex-start;
         gap: 8px;
         margin-bottom: 15px;
@@ -253,7 +254,7 @@
     }
 
     .badge-tenggat-outline {
-       border: 1px solid #000;
+        border: 1px solid #000;
         padding: 4px 12px;
         border-radius: 50px;
         font-size: 0.7rem;
@@ -266,7 +267,7 @@
         color: #6b7280;
         font-size: 0.95rem;
         line-height: 1.5;
-        margin-bottom: 25px; /* Memberi jarak ke harga */
+        margin-bottom: 25px;
         max-width: 90%;
     }
 
@@ -275,9 +276,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: auto; /* Paksa ke paling bawah card */
+        margin-top: auto;
         gap: 10px;
-        flex-wrap: wrap
+        flex-wrap: wrap;
     }
 
     .price-bold {
@@ -295,7 +296,7 @@
         font-weight: 600;
         text-decoration: none;
         text-align: center;
-        flex-grow: 1; /* Biarkan tombol melebar jika turun ke bawah */
+        flex-grow: 1;
         max-width: 120px;
     }
 
@@ -304,8 +305,8 @@
         transform: translateY(-1px);
         transition: ease 0.6s;
     }
-    /* Photo Card */
 
+    /* Photo Card */
     .log-presensi-box {
         border: 1px solid var(--border-color);
         border-radius: 20px;
@@ -355,84 +356,84 @@
         color: #ef6c00;
         border: 1px solid #ffe0b2;
     }
-    /* MODAL STYLE REVISION (Wireframe Match) */
-.modal-content-custom {
-    border-radius: 24px !important;
-    border: none !important;
-    padding: 10px;
-}
 
-.modal-body-webcam {
-    padding: 20px !important;
-}
+    /* MODAL STYLE */
+    .modal-content-custom {
+        border-radius: 24px !important;
+        border: none !important;
+        padding: 10px;
+    }
 
-.webcam-container {
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    background: #f3f4f6;
-    border-radius: 16px;
-    overflow: hidden;
-    position: relative;
-    border: 1px solid var(--border-color);
-}
+    .modal-body-webcam {
+        padding: 20px !important;
+    }
 
-#video, #photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+    .webcam-container {
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        background: #f3f4f6;
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid var(--border-color);
+    }
 
-/* Custom Select/Dropdown in Modal (If needed) */
-.modal-select {
-    width: 100%;
-    padding: 10px 15px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    margin-top: 15px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-}
+    #video, #photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-.modal-footer-custom {
-    border: none !important;
-    padding: 0 20px 20px 20px !important;
-    display: flex;
-    gap: 12px;
-}
+    .modal-select {
+        width: 100%;
+        padding: 10px 15px;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
 
-.btn-modal-cancel {
-    flex: 1;
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 12px;
-    font-weight: 600;
-    color: var(--primary-color);
-}
+    .modal-footer-custom {
+        border: none !important;
+        padding: 0 20px 20px 20px !important;
+        display: flex;
+        gap: 12px;
+    }
 
-.btn-modal-action {
-    flex: 1;
-    background: #1a202c; /* Hitam sesuai tombol Send di wireframe */
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 12px;
-    font-weight: 600;
-}
+    .btn-modal-cancel {
+        flex: 1;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 12px;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
 
-.btn-modal-action:disabled {
-    background: #e5e7eb;
-    color: #9ca3af;
-}
+    .btn-modal-action {
+        flex: 1;
+        background: #1a202c;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px;
+        font-weight: 600;
+    }
 
-.border-radius-20 {
-    border-radius: 20px !important;
-}
+    .btn-modal-action:disabled {
+        background: #e5e7eb;
+        color: #9ca3af;
+    }
 
-.swal2-styled.swal2-confirm {
-    background-color: var(--primary-color) !important; /* Warna biru gelap sesuai tema */
-    border-radius: 12px !important;
-}
+    .border-radius-20 {
+        border-radius: 20px !important;
+    }
+
+    .swal2-styled.swal2-confirm {
+        background-color: var(--primary-color) !important;
+        border-radius: 12px !important;
+    }
 
     @media (max-width: 1366px) {
         .tagihan-footer {
@@ -449,7 +450,7 @@
     
     @media (max-width: 480px) {
         .tagihan-header {
-            flex-direction: column; /* Tumpuk kembali di layar HP sangat kecil */
+            flex-direction: column;
         }
         .tagihan-footer {
             flex-direction: column;
@@ -465,7 +466,6 @@
 </style>
 
 <div class="container-fluid">
-    {{-- JAM BESAR TENGAH --}}
     <div class="hero-section">
         <h1 id="currentTime">00:00:00</h1>
         <div class="date-display">{{ now()->locale('id')->isoFormat('dddd, DD MMMM YYYY') }}</div>
@@ -475,28 +475,37 @@
     </div>
 
     <div class="dashboard-grid">
-        {{-- KOLOM KIRI --}}
         <div class="col-left">
             <div class="d-flex flex-column gap-4">
-                {{-- CARD PRESENSI HARI INI (DIREVISI) --}}
                 <div class="card-modern">
                     <h5 class="card-title">Presensi Hari Ini</h5>
                     
                     @php
-                        $presensiHariIni = \App\Models\Presensi::where('user_id', auth()->id())
-                            ->where('tanggal', now()->toDateString())->first();
+                        $presensiHariIni = \App\Models\Presensi::where('siswa_id', auth()->user()->siswa->id)
+                            ->whereDate('tanggal', now()->toDateString())->first();
                     @endphp
 
-                    {{-- INFO LOG SETELAH ABSEN (Muncul hanya jika sudah ada data masuk) --}}
                     @if($presensiHariIni && $presensiHariIni->jam_masuk)
                     <div class="log-presensi-box mb-3">
                         <div class="d-flex align-items-start gap-3">
-                            {{-- Foto Selfie --}}
                             <div class="photo-placeholder">
-                                @if($presensiHariIni->foto_masuk)
-                                    <img src="{{ asset('storage/' . $presensiHariIni->foto_masuk) }}" alt="Selfie">
+                                @if(in_array($presensiHariIni->status_kehadiran, ['izin', 'sakit']))
+                                    {{-- Tampilkan bukti izin jika status izin/sakit --}}
+                                    @if($presensiHariIni->bukti_izin)
+                                        <img src="{{ asset('storage/' . $presensiHariIni->bukti_izin) }}" alt="Bukti Izin">
+                                    @else
+                                        <div class="text-muted small text-center">
+                                            <i class="bi bi-file-earmark-text fs-4"></i>
+                                            <div style="font-size: 0.7rem;">Tanpa Bukti</div>
+                                        </div>
+                                    @endif
                                 @else
-                                    <div class="text-muted small">No Photo</div>
+                                    {{-- Tampilkan foto masuk jika hadir/telat --}}
+                                    @if($presensiHariIni->foto_masuk)
+                                        <img src="{{ asset('storage/' . $presensiHariIni->foto_masuk) }}" alt="Selfie">
+                                    @else
+                                        <div class="text-muted small">No Photo</div>
+                                    @endif
                                 @endif
                             </div>
 
@@ -506,13 +515,29 @@
                                     <span class="text-muted small">{{ \Carbon\Carbon::parse($presensiHariIni->tanggal)->format('m/d/Y') }}</span>
                                 </div>
                                 
+                                {{-- Tampilkan keterangan izin jika ada --}}
+                                @if(in_array($presensiHariIni->status_kehadiran, ['izin', 'sakit']) && $presensiHariIni->keterangan_izin)
+                                <div class="mt-2 mb-2">
+                                    <small class="text-muted d-block" style="font-size: 0.8rem;">Keterangan:</small>
+                                    <small class="text-dark">{{ Str::limit($presensiHariIni->keterangan_izin, 60) }}</small>
+                                </div>
+                                @endif
+                                
                                 <div class="d-flex justify-content-end mt-3">
-                                    @if($presensiHariIni->status == 'hadir')
+                                    @if($presensiHariIni->status_kehadiran == 'hadir')
                                         <span class="badge-status success">Tepat Waktu</span>
-                                    @elseif($presensiHariIni->status == 'terlambat')
+                                    @elseif($presensiHariIni->status_kehadiran == 'telat')
                                         <span class="badge-status danger">Terlambat</span>
+                                    @elseif($presensiHariIni->status_kehadiran == 'izin')
+                                        <span class="badge-status warning">
+                                            <i class="bi bi-calendar-x me-1"></i>Izin
+                                        </span>
+                                    @elseif($presensiHariIni->status_kehadiran == 'sakit')
+                                        <span class="badge-status warning">
+                                            <i class="bi bi-heart-pulse me-1"></i>Sakit
+                                        </span>
                                     @else
-                                        <span class="badge-status warning">{{ ucfirst($presensiHariIni->status) }}</span>
+                                        <span class="badge-status warning">{{ ucfirst($presensiHariIni->status_kehadiran) }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -529,46 +554,48 @@
                             </button>
                         </div>
                         <div class="col-6">
+                            {{-- Tombol hanya mati jika: Belum absen masuk ATAU Sudah absen pulang --}}
                             <button class="btn-outline-custom" onclick="cekJamKeluar()"
-                                {{ (!$presensiHariIni || $presensiHariIni->jam_keluar) ? 'disabled' : '' }}>
+                                {{ (!$presensiHariIni || $presensiHariIni->jam_pulang) ? 'disabled' : '' }}>
                                 <i class="bi bi-box-arrow-right fs-5"></i> Keluar
                             </button>
                         </div>
                     </div>
                     <div class="border-top pt-3">
-                        <a href="{{ route('presensi.izin') }}" class="btn-outline-custom text-decoration-none">
-                            <i class="bi bi-file-earmark-text"></i> Pengajuan Izin / Sakit
-                        </a>
+                        {{-- Tambahkan kondisi disabled jika sudah absen masuk --}}
+                        <button class="btn-outline-custom text-decoration-none w-100" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#modalAjukanIzin"
+                            {{ ($presensiHariIni && $presensiHariIni->jam_masuk) ? 'disabled' : '' }}>
+                            
+                            @if($presensiHariIni && $presensiHariIni->jam_masuk)
+                                <i class="bi bi-check-circle"></i> Sudah Melakukan Presensi
+                            @else
+                                <i class="bi bi-file-earmark-text"></i> Pengajuan Izin / Sakit
+                            @endif
+                        </button>
                     </div>
                 </div>
 
-                {{-- RINGKASAN KEHADIRAN --}}
                 <div class="card-modern">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="card-title mb-0">Ringkasan Kehadiran</h5>
-                        <small class="text-muted">6 bulan terakhir</small>
+                        <small class="text-muted">{{ $labelBulan }}</small>
                     </div>
 
-                    <div class="chart-container">
-                        @for($i=0; $i<6; $i++)
-                        <div class="bar-group">
-                            <div class="segment-present" style="height: {{ rand(40,70) }}%"></div>
-                            <div class="segment-late" style="height: {{ rand(10,20) }}%"></div>
-                            <div class="segment-absent" style="height: {{ rand(5,10) }}%"></div>
-                        </div>
-                        @endfor
+                    <div style="height: 250px;">
+                        <canvas id="kehadiranChart"></canvas>
                     </div>
 
-                    <div class="d-flex flex-wrap gap-3 mt-3">
-                        <small><i class="bi bi-circle-fill me-1" style="color:var(--primary-color)"></i> Tepat Waktu</small>
-                        <small><i class="bi bi-circle-fill me-1 text-secondary"></i> Terlambat</small>
-                        <small><i class="bi bi-circle-fill me-1 text-light border rounded-circle"></i> Alpa</small>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <small><i class="bi bi-circle-fill me-1" style="color:#213448"></i> Hadir</small>
+                        <small><i class="bi bi-circle-fill me-1" style="color:#adb5bd"></i> Telat</small>
+                        <small><i class="bi bi-circle-fill me-1" style="color:#dc3545"></i> Alpa/Izin</small>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- KOLOM TENGAH (LOG BULANAN) --}}
         <div class="col-center">
             <div class="card-modern">
                 <h5 class="card-title">{{ now()->locale('id')->isoFormat('MMMM YYYY') }}</h5>
@@ -582,71 +609,73 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $logs = \App\Models\Presensi::where('user_id', auth()->id())
-                                ->whereMonth('tanggal', now()->month)
-                                ->orderBy('tanggal', 'desc')->take(8)->get();
-                        @endphp
-                        @foreach($logs as $log)
+                        @forelse($logs as $log)
                         <tr>
                             <td>{{ \Carbon\Carbon::parse($log->tanggal)->format('d.m.Y') }}</td>
-                            <td>{{ $log->jam_masuk ? substr($log->jam_masuk, 0, 5) : '-' }}</td>
-                            <td>{{ $log->jam_keluar ? substr($log->jam_keluar, 0, 5) : '-' }}</td>
-                            <td class="{{ $log->status == 'hadir' ? 'text-success' : 'text-danger' }}">
-                                {{ ucfirst($log->status) }}
+                            <td>{{ $log->jam_masuk ? \Carbon\Carbon::parse($log->jam_masuk)->format('H:i') : '-' }}</td>
+                            <td>{{ $log->jam_pulang ? \Carbon\Carbon::parse($log->jam_pulang)->format('H:i') : '-' }}</td>
+                            <td class="{{ $log->status_kehadiran == 'hadir' ? 'text-success' : 'text-danger' }}">
+                                {{ ucfirst($log->status_kehadiran) }}
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">Belum ada data presensi bulan ini</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
-                <a href="{{ route('presensi.riwayat') }}" class="see-more">See more →</a>
-            </div>
+                    <a href="{{ route('siswa.riwayat-presensi') }}" class="see-more">See more →</a>            </div>
         </div>
 
         {{-- KOLOM KANAN (TAGIHAN) --}}
         <div class="col-right">
-    <div class="card-modern-tagihan">
-    <h2 class="fw-bold mb-0" style="font-size: 1.8rem;">Tagihan Keuangan</h2>
-    <hr style="border-top: 2px solid #000; opacity: 1; margin: 15px 0 25px 0;">
+            <div class="card-modern-tagihan">
+                <h2 class="fw-bold mb-0" style="font-size: 1.8rem;">Tagihan Keuangan</h2>
+                <hr style="border-top: 2px solid #000; opacity: 1; margin: 15px 0 25px 0;">
 
-    @forelse ($tagihanBelumBayar ?? [] as $tagihan)
-    <div class="tagihan-item">
-        <div class="tagihan-header">
-            <h3 class="tagihan-title">{{ $tagihan->nama }}</h3>
-            <div class="badge-tenggat-outline">
-                Tenggat : {{ \Carbon\Carbon::parse($tagihan->tenggat)->format('d / m / y') }}
+                @forelse ($tagihanBelumBayar as $tagihanSiswa)
+                <div class="tagihan-item">
+                    <div class="tagihan-header">
+                        <h3 class="tagihan-title">{{ $tagihanSiswa->tagihan->nama_tagihan }}</h3>
+                        <div class="badge-tenggat-outline">
+                            Tenggat: {{ \Carbon\Carbon::parse($tagihanSiswa->jatuh_tempo)->format('d / m / y') }}
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="badge border text-dark" style="font-size: 0.65rem; background: #f3f4f6;">
+                            BULAN KE-{{ $tagihanSiswa->bulan_ke }}
+                        </span>
+                    </div>
+
+                    <p class="tagihan-description">
+                        Pembayaran untuk {{ $tagihanSiswa->tagihan->nama_tagihan }} bulan ke-{{ $tagihanSiswa->bulan_ke }}. Mohon segera dilunasi sebelum tanggal jatuh tempo.
+                    </p>
+
+                    <div class="tagihan-footer">
+                        <div class="price-bold">
+                            Rp {{ number_format($tagihanSiswa->tagihan->nominal, 0, ',', '.') }}
+                        </div>
+                        <a href="{{ route('siswa.tagihan.index') }}" class="btn-bayar-black">
+                            Bayar
+                        </a>
+                    </div>
+                </div>
+                @empty
+                <div class="text-center py-5">
+                    <p class="text-muted">Tidak ada tagihan tertunggak.</p>
+                </div>
+                @endforelse
+
+                <div>
+                    <a href="{{ route('siswa.tagihan.index') }}" class="see-more">See more →</a>
+                </div>
             </div>
         </div>
-
-        <div class="mb-2">
-            <span class="badge border text-dark" style="font-size: 0.65rem; background: #f3f4f6;">
-                {{ strtoupper($tagihan->kategori) }}
-            </span>
-        </div>
-
-        <p class="tagihan-description">
-            {{ $tagihan->keterangan ?? 'Mohon untuk segera membayar tagihan untuk ' . strtolower($tagihan->nama) . ' yang digunakan.' }}
-        </p>
-
-        <div class="tagihan-footer">
-            <div class="price-bold">
-                Rp {{ number_format($tagihan->nominal, 0, ',', '.') }}
-            </div>
-            <a href="{{ route('pembayaran.siswa') }}" class="btn-bayar-black">
-                Bayar
-            </a>
-        </div>
     </div>
-    @empty
-    <div class="text-center py-5">
-        <p class="text-muted">Tidak ada tagihan tertunggak.</p>
-    </div>
-    @endforelse
-    <div>
-        <a href="{{ route('pembayaran.siswa') }}" class="see-more">See more →</a>
 </div>
 
-{{-- SEMUA MODAL DARI KODE ASLI (DIINTEGRASIKAN KEMBALI) --}}
 <div class="modal fade" id="modalAbsenMasuk" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-content-custom">
@@ -658,13 +687,12 @@
                 </div>
 
                 <select class="modal-select" id="videoSource">
-                <option value="">Mencari Kamera...</option>
-</select>
+                    <option value="">Mencari Kamera...</option>
+                </select>
             </div>
             
             <div class="modal-footer-custom">
                 <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
-                
                 <button type="button" class="btn-modal-action" id="btnCaptureAction" onclick="handleCaptureAction()">Take</button>
             </div>
         </div>
@@ -672,32 +700,90 @@
 </div>
 
 <div class="modal fade" id="modalAbsenKeluar" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content modal-content-custom"> 
-                <form id="formAbsenKeluar" method="POST" action="{{ route('presensi.keluar') }}">
-                    @csrf
-                    <div class="modal-header border-0">
-                        <h5 class="modal-title fw-bold">Jurnal Kegiatan</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p class="text-muted small mb-3">Tuliskan ringkasan pekerjaan Anda hari ini untuk melengkapi absensi keluar.</p>
-                        <textarea name="jurnal_kegiatan" id="jurnal_kegiatan" class="form-control" rows="6" 
-                            placeholder="Apa yang Anda kerjakan hari ini? (Min. 50 karakter)" 
-                            style="border-radius: 12px; border: 1px solid var(--border-color);"
-                            required minlength="50"></textarea>
-                    </div>
-                    <div class="modal-footer border-0">
-                        <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal" style="width: auto; padding: 10px 25px;">Batal</button>
-                        <button type="submit" class="btn-modal-action" style="width: auto; padding: 10px 25px;">Simpan & Keluar</button>
-                    </div>
-                </form>
-            </div>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-content-custom"> 
+            <form id="formAbsenKeluar" method="POST" action="{{ route('siswa.absenPulang') }}">
+                @csrf
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Jurnal Kegiatan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">Tuliskan ringkasan pekerjaan Anda hari ini untuk melengkapi absensi keluar.</p>
+                    <textarea name="jurnal_kegiatan" id="jurnal_kegiatan" class="form-control" rows="6" 
+                        placeholder="Apa yang Anda kerjakan hari ini? (Min. 5 karakter)" 
+                        style="border-radius: 12px; border: 1px solid var(--border-color);"
+                        required minlength="5"></textarea>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal" style="width: auto; padding: 10px 25px;">Batal</button>
+                    <button type="submit" class="btn-modal-action" style="width: auto; padding: 10px 25px;">Simpan & Keluar</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+
+{{-- Tambahkan di atas form modal --}}
+@if(session('error'))
+<script>
+    Swal.fire('Error', '{{ session('error') }}', 'error');
+</script>
+@endif
+
+@if(session('success'))
+<script>
+    Swal.fire('Success', '{{ session('success') }}', 'success');
+</script>
+@endif
+
+@if($errors->any())
+<script>
+    Swal.fire('Error', '{{ $errors->first() }}', 'error');
+</script>
+@endif
+<div class="modal fade" id="modalAjukanIzin" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-custom">
+            <form method="POST" action="{{ route('siswa.ajukanIzin') }}" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Pengajuan Izin/Sakit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Jenis <span class="text-danger">*</span></label>
+                        <select name="status_kehadiran" class="form-select" required>
+                            <option value="">Pilih Jenis</option>
+                            <option value="izin">Izin</option>
+                            <option value="sakit">Sakit</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Keterangan <span class="text-danger">*</span></label>
+                        <textarea name="keterangan_izin" class="form-control" rows="4" 
+                            placeholder="Jelaskan alasan izin/sakit Anda... (minimal 10 karakter)" 
+                            required minlength="10"></textarea>
+                        <small class="text-muted">Minimal 10 karakter</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bukti Surat (Opsional)</label>
+                        <input type="file" name="bukti_izin" class="form-control" 
+                               accept="image/jpeg,image/jpg,image/png">
+                        <small class="text-muted">Upload foto surat izin/sakit jika ada (Max: 2MB)</small>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-modal-action">Kirim Pengajuan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script>
-    // 1. UPDATE JAM REAL-TIME
     function updateTime() {
         const now = new Date();
         document.getElementById('currentTime').textContent = 
@@ -705,269 +791,290 @@
             now.getMinutes().toString().padStart(2, '0') + ":" + 
             now.getSeconds().toString().padStart(2, '0');
     }
-    setInterval(updateTime, 1000);
-    updateTime();
+        setInterval(updateTime, 1000);
+        updateTime();
 
-    // 2. LOGIKA WEBCAM (Sesuai kode asli Anda)
-    let video = document.getElementById('video');
-    let canvas = document.getElementById('canvas');
-    let photo = document.getElementById('photo');
-    let capturedImage = null;
+        let video = document.getElementById('video');
+        let canvas = document.getElementById('canvas');
+        let photo = document.getElementById('photo');
+        let capturedImage = null;
+        let isPhotoTaken = false;
 
-    document.getElementById('modalAbsenMasuk').addEventListener('shown.bs.modal', function () {
-        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-            video.srcObject = stream;
-        }).catch(err => Swal.fire('Error', 'Kamera tidak ditemukan', 'error'));
-    });
+    async function getCameraDevices() {
+        try {
+            await navigator.mediaDevices.getUserMedia({ video: true });
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoSelect = document.querySelector('#videoSource');
+            videoSelect.innerHTML = '';
 
-    function takeSnapshot() {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        capturedImage = canvas.toDataURL('image/png');
-        photo.src = capturedImage;
-        photo.style.display = 'block';
-        video.style.display = 'none';
-        document.getElementById('snap').style.display = 'none';
-        document.getElementById('retake').style.display = 'inline-block';
-        document.getElementById('submitAbsen').disabled = false;
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            
+            videoDevices.forEach((device, index) => {
+                const option = document.createElement('option');
+                option.value = device.deviceId;
+                option.text = device.label || `Kamera ${index + 1}`;
+                videoSelect.appendChild(option);
+            });
+
+            if (videoDevices.length === 0) {
+                videoSelect.innerHTML = '<option>Kamera tidak ditemukan</option>';
+            }
+        } catch (err) {
+            console.error("Error mendeteksi kamera: ", err);
+            document.querySelector('#videoSource').innerHTML = '<option>Akses Kamera Ditolak</option>';
+        }
     }
 
-    function retakePhoto() {
-        video.style.display = 'block';
+    async function startStream(deviceId) {
+        if (window.stream) {
+            window.stream.getTracks().forEach(track => track.stop());
+        }
+
+        const constraints = {
+            video: {
+                deviceId: deviceId ? { exact: deviceId } : undefined,
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
+        };
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            window.stream = stream;
+            video.srcObject = stream;
+        } catch (err) {
+            Swal.fire('Error', 'Gagal mengakses kamera pilihan', 'error');
+        }
+    }
+
+    document.getElementById('modalAbsenMasuk').addEventListener('show.bs.modal', async () => {
+        await getCameraDevices();
+        const videoSelect = document.querySelector('#videoSource');
+        if (videoSelect.options.length > 0) {
+            startStream(videoSelect.value);
+        }
+    });
+
+    document.querySelector('#videoSource').onchange = (e) => {
+        startStream(e.target.value);
+    };
+
+    document.getElementById('modalAbsenMasuk').addEventListener('hidden.bs.modal', () => {
+        isPhotoTaken = false;
+        const btn = document.getElementById('btnCaptureAction');
+        btn.textContent = 'Take';
         photo.style.display = 'none';
-        document.getElementById('snap').style.display = 'inline-block';
-        document.getElementById('retake').style.display = 'none';
-        document.getElementById('submitAbsen').disabled = true;
+        video.style.display = 'block';
+        
+        if (window.stream) {
+            window.stream.getTracks().forEach(track => track.stop());
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('kehadiranChart');
+        if (!ctx) return;
+
+        new Chart(ctx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Hadir', 'Telat', 'Alpa/Izin'], // Label kategori
+                datasets: [{
+                    label: 'Jumlah Hari',
+                    data: [{{ $countHadir }}, {{ $countTelat }}, {{ $countAlpa }}],
+                    backgroundColor: [
+                        '#213448', 
+                        '#adb5bd',
+                        '#dc3545'  
+                    ],
+                    borderRadius: 8,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { 
+                            stepSize: 1,
+                            precision: 0
+                        },
+                        grid: { color: '#f0f0f0' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    });
+
+    function handleCaptureAction() {
+        const btn = document.getElementById('btnCaptureAction');
+        
+        if (!isPhotoTaken) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            capturedImage = canvas.toDataURL('image/png');
+            
+            photo.src = capturedImage;
+            photo.style.display = 'block';
+            video.style.display = 'none';
+            
+            btn.textContent = 'Send';
+            btn.style.background = '#1a202c';
+            isPhotoTaken = true;
+        } else {
+            submitAbsenMasuk();
+        }
     }
 
     function submitAbsenMasuk() {
-    // Tampilkan loading sebentar agar user tahu proses sedang berjalan
-    Swal.fire({
-        title: 'Mengirim Absensi...',
-        text: 'Mohon tunggu sebentar',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    fetch("{{ route('presensi.masuk') }}", {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json', 
-            'X-CSRF-TOKEN': '{{ csrf_token() }}' 
-        },
-        body: JSON.stringify({ foto_masuk: capturedImage })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            // Notifikasi Berhasil (Style Wireframe/Clean)
-            Swal.fire({
-                icon: 'success',
-                title: 'Absensi Berhasil!',
-                text: 'Selamat bekerja, jangan lupa berdoa.',
-                showConfirmButton: false,
-                timer: 2000, // Pop-up hilang otomatis dalam 2 detik
-                timerProgressBar: true,
-                customClass: {
-                    popup: 'border-radius-20' // Opsional: sesuaikan radius
-                }
-            }).then(() => {
-                location.reload(); // Reload halaman setelah pop-up hilang
-            });
-        } else {
-            Swal.fire('Gagal', data.message, 'error');
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error');
-    });
-}
-
-    // 3. VALIDASI JAM KELUAR (Sesuai kode asli Anda)   
-    function cekJamKeluar() {
-        if (new Date().getHours() < 16) {
-            Swal.fire('Belum Waktunya', 'Absen keluar tersedia setelah jam 16:00', 'error');
-            return;
-        }
-        new bootstrap.Modal(document.getElementById('modalAbsenKeluar')).show();
-    }
-
-    let isPhotoTaken = false;
-
-function handleCaptureAction() {
-    const btn = document.getElementById('btnCaptureAction');
-    
-    if (!isPhotoTaken) {
-        // Logika Mengambil Foto
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        capturedImage = canvas.toDataURL('image/png');
-        
-        photo.src = capturedImage;
-        photo.style.display = 'block';
-        video.style.display = 'none';
-        
-        // Ubah State Tombol
-        btn.textContent = 'Send';
-        btn.style.background = '#1a202c'; // Warna gelap
-        isPhotoTaken = true;
-    } else {
-        // Logika Mengirim (Submit)
-        submitAbsenMasuk();
-    }
-}
-
-// Reset modal saat ditutup
-document.getElementById('modalAbsenMasuk').addEventListener('hidden.bs.modal', function () {
-    isPhotoTaken = false;
-    const btn = document.getElementById('btnCaptureAction');
-    btn.textContent = 'Take';
-    photo.style.display = 'none';
-    video.style.display = 'block';
-    
-    // Matikan kamera agar hemat resource
-    let stream = video.srcObject;
-    if (stream) {
-        let tracks = stream.getTracks();
-        tracks.forEach(track => track.stop());
-    }
-});
-
-const videoElement = document.querySelector('#video');
-const videoSelect = document.querySelector('#videoSource');
-
-// 1. Fungsi untuk mendapatkan daftar kamera yang tersedia
-async function getCameraDevices() {
-    try {
-        // Minta izin kamera dulu agar label/nama kamera muncul (tidak anonim)
-        await navigator.mediaDevices.getUserMedia({ video: true });
-        
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        videoSelect.innerHTML = ''; // Kosongkan dropdown
-
-        const videoDevices = devices.filter(device => device.kind === 'videoinput');
-        
-        videoDevices.forEach((device, index) => {
-            const option = document.createElement('option');
-            option.value = device.deviceId;
-            // Jika label kosong, beri nama generic Kamera 1, Kamera 2
-            option.text = device.label || `Kamera ${index + 1}`;
-            videoSelect.appendChild(option);
+        Swal.fire({
+            title: 'Mengirim Absensi...',
+            text: 'Mohon tunggu sebentar',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
         });
 
-        if (videoDevices.length === 0) {
-            videoSelect.innerHTML = '<option>Kamera tidak ditemukan</option>';
-        }
-    } catch (err) {
-        console.error("Error mendeteksi kamera: ", err);
-        videoSelect.innerHTML = '<option>Akses Kamera Ditolak</option>';
-    }
-}
-
-// 2. Fungsi untuk menjalankan stream berdasarkan deviceId yang dipilih
-async function startStream(deviceId) {
-    if (window.stream) {
-        window.stream.getTracks().forEach(track => track.stop());
-    }
-
-    const constraints = {
-        video: {
-            deviceId: deviceId ? { exact: deviceId } : undefined,
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-        }
-    };
-
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        window.stream = stream;
-        videoElement.srcObject = stream;
-    } catch (err) {
-        Swal.fire('Error', 'Gagal mengakses kamera pilihan', 'error');
-    }
-}
-
-// 3. Event Listener: Jalankan deteksi saat modal akan ditampilkan
-document.getElementById('modalAbsenMasuk').addEventListener('show.bs.modal', async () => {
-    await getCameraDevices();
-    // Jalankan kamera pertama secara otomatis jika ada
-    if (videoSelect.options.length > 0) {
-        startStream(videoSelect.value);
-    }
-});
-
-// 4. Event Listener: Ganti kamera saat dropdown diubah
-videoSelect.onchange = () => {
-    startStream(videoSelect.value);
-};
-
-// Pastikan fungsi stop kamera saat modal ditutup (tambahan dari kode sebelumnya)
-document.getElementById('modalAbsenMasuk').addEventListener('hidden.bs.modal', () => {
-    if (window.stream) {
-        window.stream.getTracks().forEach(track => track.stop());
-    }
-});
-
-document.getElementById('formAbsenKeluar').addEventListener('submit', function(e) {
-    e.preventDefault(); // Berhenti sejenak untuk memunculkan loading
-
-    const form = this;
-    const jurnalText = document.getElementById('jurnal_kegiatan').value;
-
-    if (jurnalText.length < 50) {
-        Swal.fire('Perhatian', 'Jurnal kegiatan minimal 50 karakter.', 'warning');
-        return;
-    }
-
-    // 1. Tampilkan Loading
-    Swal.fire({
-        title: 'Menyimpan Jurnal...',
-        text: 'Sedang memproses absensi keluar Anda',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    // 2. Kirim data via AJAX agar bisa memunculkan notifikasi sukses
-    const formData = new FormData(form);
-
-    fetch(form.action, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        },
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // 3. Tampilkan Notifikasi Sukses
+        fetch("{{ route('siswa.absenMasuk') }}", {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json' 
+            },
+            body: JSON.stringify({ foto_masuk: capturedImage })
+        })
+        .then(res => {
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                return res.json();
+            } else {
+                return res.text().then(text => {
+                    console.error('Response bukan JSON:', text);
+                    throw new Error('Server mengembalikan HTML, bukan JSON. Cek console untuk detail.');
+                });
+            }
+        })
+        .then(data => {
+            if(data.success) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalAbsenMasuk'));
+                if (modal) modal.hide();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Absensi Berhasil!',
+                    text: 'Selamat bekerja, jangan lupa berdoa.',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    customClass: {
+                        popup: 'border-radius-20'
+                    }
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire('Gagal', data.message, 'error');
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
             Swal.fire({
-                icon: 'success',
-                title: 'Berhasil Pulang!',
-                text: 'Jurnal tersimpan. Hati-hati di jalan!',
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true
-            }).then(() => {
-                location.reload();
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                text: err.message || 'Tidak dapat terhubung ke server',
+                footer: 'Silakan coba lagi atau hubungi admin'
+            });
+        });
+    }
+
+    function cekJamKeluar() {
+        const sekarang = new Date();
+        const jam = sekarang.getHours();
+
+        if (jam < 16) {
+            Swal.fire({
+                title: 'Pulang Lebih Awal?',
+                text: "Saat ini belum jam 16:00. Jika Anda pulang sekarang, jam pulang akan tercatat sesuai waktu saat ini. Lanjutkan?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#213448',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Lanjut',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const modalKeluar = new bootstrap.Modal(document.getElementById('modalAbsenKeluar'));
+                    modalKeluar.show();
+                }
             });
         } else {
-            Swal.fire('Gagal', data.message || 'Terjadi kesalahan saat simpan.', 'error');
+            const modalKeluar = new bootstrap.Modal(document.getElementById('modalAbsenKeluar'));
+            modalKeluar.show();
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Swal.fire('Error', 'Gagal menyambung ke server.', 'error');
-    });
-});
+    }
+    
+    document.getElementById('formAbsenKeluar').addEventListener('submit', function(e) {
+        e.preventDefault();
 
+        const form = this;
+        const jurnalText = document.getElementById('jurnal_kegiatan').value;
+
+        if (jurnalText.length < 5) {
+            Swal.fire('Perhatian', 'Jurnal kegiatan minimal 5 karakter.', 'warning');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Menyimpan Jurnal...',
+            text: 'Sedang memproses absensi keluar Anda',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil Pulang!',
+                    text: 'Jurnal tersimpan. Hati-hati di jalan!',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire('Gagal', data.message || 'Terjadi kesalahan saat simpan.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Gagal menyambung ke server.', 'error');
+        });
+    });
 </script>
 @endsection
