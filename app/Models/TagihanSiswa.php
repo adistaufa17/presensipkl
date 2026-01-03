@@ -23,14 +23,14 @@ class TagihanSiswa extends Model
         'catatan_admin'
     ];
     
-    public function siswa()
-    {
-        return $this->belongsTo(Siswa::class, 'siswa_id');
-    }
-
     public function tagihan()
     {
-        return $this->belongsTo(Tagihan::class, 'tagihan_id');
+        return $this->belongsTo(Tagihan::class);
+    }
+
+    public function siswa()
+    {
+        return $this->belongsTo(Siswa::class);
     }
 
     public function admin()

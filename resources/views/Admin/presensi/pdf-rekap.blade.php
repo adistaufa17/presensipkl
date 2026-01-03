@@ -149,10 +149,6 @@
                 <td>: {{ $sekolah->nama_sekolah }}</td>
             </tr>
             <tr>
-                <td>Alamat</td>
-                <td>: {{ $sekolah->alamat ?? '-' }}</td>
-            </tr>
-            <tr>
                 <td>Periode</td>
                 <td>: {{ $bulanNama }}</td>
             </tr>

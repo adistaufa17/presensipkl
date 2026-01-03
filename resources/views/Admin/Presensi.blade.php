@@ -294,7 +294,7 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <label class="small fw-semibold text-muted mb-2">JAM PULANG</label>
-                                                <p class="mb-0">{{ $p->jam_pulang ? \Carbon\Carbon::parse($p->jam_pulang)->format('H:i:s') : 'Belum absen' }}</p>
+                                                <p class="mb-0">{{ $p->jam_pulang ? \Carbon\Carbon::parse($p->jam_pulang)->format('H:i:s') : 'Belum pulang' }}</p>
                                             </div>
                                             <div class="col-md-12">
                                                 <label class="small fw-semibold text-muted mb-2">JURNAL KEGIATAN</label>

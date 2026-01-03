@@ -14,7 +14,6 @@ class PembayaranController extends Controller
 {
     public function index(Request $request) 
     {
-        // 1. Data untuk Tab Transaksi (Semua record detail)
         $pembayaran = TagihanSiswa::with(['siswa.user', 'tagihan'])
             ->when($request->search, function($query) use ($request) {
                 $query->whereHas('siswa.user', function($q) use ($request) {
@@ -55,11 +54,7 @@ class PembayaranController extends Controller
     public function showDetail($id)
     {
         try {
-            // 1. Ambil data tagihan yang diklik sebagai referensi nama
             $referensi = Tagihan::findOrFail($id);
-
-            // 2. Cari SEMUA TagihanSiswa yang memiliki NAMA tagihan yang sama
-            // Kita filter berdasarkan 'nama_tagihan' melalui relasi 'tagihan'
             $details = TagihanSiswa::with(['siswa.user'])
                 ->whereHas('tagihan', function($q) use ($referensi) {
                     $q->where('nama_tagihan', $referensi->nama_tagihan);
@@ -119,14 +114,22 @@ class PembayaranController extends Controller
         return redirect()->back()->with('success', 'Pembayaran berhasil dikirim');
     }
 
-    public function konfirmasi(Request $request, $id) {
-        $tagihan = TagihanSiswa::find($id);
-        $tagihan->update([
-            'status' => $request->status, 
-            'dikonfirmasi_oleh' => auth()->id(),
-            'catatan_admin' => $request->catatan
-        ]);
-        return redirect()->back()->with('success', 'Status pembayaran diperbarui');
-    }
+    public function konfirmasi(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required',
+        'catatan_admin' => 'nullable|string'
+    ]);
+
+    $tagihan = TagihanSiswa::findOrFail($id);
+
+    $tagihan->status = $request->status;
+    $tagihan->catatan_admin = $request->catatan_admin; // 🔥 INI KUNCINYA
+    $tagihan->dikonfirmasi_oleh = auth()->id();
+    $tagihan->save();
+
+    return back()->with('success', 'Status pembayaran diperbarui');
+}
+
 
 }

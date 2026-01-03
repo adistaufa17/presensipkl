@@ -6,14 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tagihan extends Model
 {
-    // Hapus siswa_id dari sini! Master tagihan tidak butuh siswa_id
     protected $fillable = [
-        'siswa_id', 
+        'siswa_id',     
         'nama_tagihan', 
         'nominal', 
         'jatuh_tempo', 
         'status'
     ];
+
+    public function siswa()
+    {
+        return $this->belongsTo(Siswa::class, 'siswa_id');
+    }
 
     public function tagihanSiswas()
     {

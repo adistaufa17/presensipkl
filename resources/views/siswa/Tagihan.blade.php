@@ -22,11 +22,17 @@
     @endif
 
     <div class="row">
-        @forelse($tagihans as $t)
+        @forelse($tagihans as $index => $t)
         <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 20px; border: 1px solid var(--border-color) !important;">
+            <div class="card border-0 shadow-sm h-100 position-relative" style="border-radius: 20px; border: 1px solid var(--border-color) !important;">
+                
+                {{-- Label Urutan --}}
+                <div class="position-absolute top-0 start-0 bg-primary text-white px-3 py-1 small fw-bold" style="border-radius: 20px 0 20px 0;">
+                    #{{ $t->bulan_ke }}
+                </div>
+
                 <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4 mt-2">
                         {{-- Badge Status Modern --}}
                         @php
                             $statusClass = [
@@ -46,7 +52,11 @@
                         </div>
                     </div>
                     
-                    <h5 class="fw-bold text-dark mb-1">{{ $t->tagihan->nama_tagihan }}</h5>
+                    {{-- Nama Tagihan + Keterangan Bulan --}}
+                    <h5 class="fw-bold text-dark mb-1">
+                        {{ $t->tagihan->nama_tagihan }} 
+                        <span class="text-primary">(Bulan ke-{{ $t->bulan_ke }})</span>
+                    </h5>
                     <h3 class="fw-bold text-primary mb-4">Rp {{ number_format($t->tagihan->nominal, 0, ',', '.') }}</h3>
 
                     <hr class="opacity-50 mb-4" style="border-top: 1px dashed var(--border-color);">
@@ -83,23 +93,50 @@
                         <h5 class="modal-title fw-bold">Upload Bukti Bayar</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <form action="{{ route('siswa.tagihan.bayar', $t->id) }}" method="POST" enctype="multipart/form-data">
+                    {{-- Pastikan form memiliki enctype="multipart/form-data" --}}
+                    <form action="{{ route('siswa.tagihan.bayar', $t->id) }}" 
+                        method="POST" 
+                        enctype="multipart/form-data">
                         @csrf
+                        
                         <div class="modal-body px-4">
                             <div class="p-3 bg-light rounded-4 mb-3 border border-dashed">
-                                <p class="small text-muted mb-0">Tagihan: <strong>{{ $t->tagihan->nama_tagihan }}</strong></p>
-                                <p class="h5 fw-bold text-primary mb-0">Rp {{ number_format($t->tagihan->nominal, 0, ',', '.') }}</p>
+                                <p class="small text-muted mb-0">
+                                    Tagihan: <strong>{{ $t->tagihan->nama_tagihan }} (Bulan ke-{{ $t->bulan_ke }})</strong>
+                                </p>
+                                <p class="h5 fw-bold text-primary mb-0">
+                                    Rp {{ number_format($t->tagihan->nominal, 0, ',', '.') }}
+                                </p>
                             </div>
                             
                             <label class="form-label small fw-bold text-muted">Pilih File Foto/Scan Struk</label>
-                            <input type="file" name="bukti_pembayaran" class="form-control border-0 bg-light py-2" accept="image/*" required style="border-radius: 10px;">
-                            <div class="form-text small mt-2">Format: JPG, PNG (Maks. 2MB)</div>
+                            
+                            {{-- PENTING: name="bukti_pembayaran" harus sesuai dengan validation di controller --}}
+                            <input type="file" 
+                                name="bukti_pembayaran" 
+                                class="form-control border-0 bg-light py-2" 
+                                accept="image/*" 
+                                required 
+                                style="border-radius: 10px;">
+                            
+                            <div class="form-text small mt-2">Format: JPG, PNG (Maks. 5MB)</div>
+                            
+                            {{-- Preview gambar (opsional) --}}
+                            <div id="preview-{{ $t->id }}" class="mt-3" style="display: none;">
+                                <img src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                            </div>
                         </div>
+                        
                         <div class="modal-footer border-0 px-4 pb-4 mt-2">
-                            <button type="button" class="btn btn-light fw-bold px-4" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary fw-bold px-4 rounded-3">Kirim Bukti</button>
+                            <button type="button" class="btn btn-light fw-bold px-4" data-bs-dismiss="modal">
+                                Batal
+                            </button>
+                            <button type="submit" class="btn btn-primary fw-bold px-4 rounded-3">
+                                <i class="bi bi-send me-1"></i> Kirim Bukti
+                            </button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -123,4 +160,21 @@
         border: 1px dashed var(--border-color) !important;
     }
 </style>
+
+{{-- JavaScript untuk preview gambar (opsional) --}}
+                    <script>
+                    document.querySelector('input[name="bukti_pembayaran"]').addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                                const preview = document.querySelector('#preview-{{ $t->id }}');
+                                const img = preview.querySelector('img');
+                                img.src = event.target.result;
+                                preview.style.display = 'block';
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                    </script>
 @endsection

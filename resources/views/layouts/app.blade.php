@@ -7,14 +7,17 @@
 
     <title>{{ config('app.name', 'Presensi PKL') }}</title>
 
+    <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
+    <!-- CSS Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -25,12 +28,39 @@
             --radius: 16px;
         }
 
+        /* ========== Global Styles ========== */
         body {
             background: #f5f5f5;
             margin: 0;
             padding: 0;
         }
 
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        /* ========== Select2 Customization ========== */
+        .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__choice {
+            background-color: #213448 !important;
+            color: #ffffff !important;
+            padding: 2px 10px !important;
+            border: none !important;
+            border-radius: 4px !important;
+            font-size: 13px !important;
+            margin-top: 6px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__choice__remove {
+            color: #ffffff !important;
+            margin-right: 5px !important;
+        }
+
+        .select2-container--open {
+            z-index: 9999 !important;
+        }
+
+        /* ========== Sidebar Styles ========== */
         .sidebar-custom {
             width: 240px;
             height: calc(100vh - 40px);
@@ -101,39 +131,40 @@
             border-top: 1px solid #e0e0e0;
         }
 
-        .theme-toggle {
-            display: flex;
+        .sidebar-toggle-btn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1001;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-top: 12px;
-            padding: 8px;
-        }
-
-        .theme-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: transparent;
-            border: none;
-            color: #6c757d;
-            font-size: 13px;
             cursor: pointer;
-            padding: 6px 8px;
-            border-radius: 6px;
-            transition: all 0.2s ease;
         }
 
-        .theme-btn:hover {
-            background: #f8f9fa;
-            color: var(--primary-color);
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
         }
 
-        .theme-btn.active {
-            color: #0d6efd;
-            font-weight: 600;
+        .sidebar-overlay.show {
+            display: block;
         }
 
+        /* ========== Main Content Styles ========== */
         .main-wrapper {
             margin-left: 280px;
             padding: 20px;
@@ -165,6 +196,10 @@
             transition: opacity 0.2s ease;
         }
 
+        .dashboard-user:hover {
+            opacity: 0.8;
+        }
+
         .dashboard-user-email strong {
             display: block;
             font-size: 14px;
@@ -182,55 +217,31 @@
             border: 2px solid #e0e0e0;
         }
 
-        body.dark-mode {
-            background: #1a1a1a;
-            color: #e0e0e0;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar-custom {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                left: 0;
-                top: 0;
-                height: 100vh;
-                border-radius: 0;
-            }
-
-            .sidebar-custom.show {
-                transform: translateX(0);
-            }
-
-            .main-wrapper {
-                margin-left: 0;
-            }
-        }
-
-        /* Perbaikan Sidebar & Wrapper untuk Mobile */
+        /* ========== Responsive Styles ========== */
         @media (max-width: 991.98px) {
             .sidebar-custom {
-                transform: translateX(-110%); /* Sembunyikan lebih jauh */
+                transform: translateX(-110%);
                 transition: transform 0.3s ease-in-out;
                 left: 0;
                 top: 0;
                 height: 100vh;
                 width: 260px;
                 border-radius: 0;
-                z-index: 1050; /* Di atas segalanya */
+                z-index: 1050;
             }
 
             .sidebar-custom.show {
                 transform: translateX(0);
-                box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
             }
 
             .main-wrapper {
                 margin-left: 0 !important;
-                padding: 15px; /* Padding lebih kecil di HP */
+                padding: 15px;
             }
 
             .sidebar-toggle-btn {
-                display: flex; /* Munculkan tombol di HP */
+                display: flex;
             }
 
             .dashboard-header {
@@ -238,209 +249,175 @@
             }
         }
 
-        /* Overlay saat sidebar muncul di HP */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1040;
-        }
-
-        .sidebar-overlay.show {
-            display: block;
-        }
-
-        /* Responsivitas Header */
         @media (max-width: 576px) {
             .dashboard-title {
-                font-size: 18px; /* Judul lebih kecil di HP */
+                font-size: 18px;
             }
+
             .dashboard-user-email {
-                display: none; /* Sembunyikan email di layar sangat kecil */
+                display: none;
             }
-        }
-
-        .sidebar-toggle-btn {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1001;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: #0d6efd;
-            color: white;
-            border: none;
-            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .dashboard-user:hover {
-            opacity: 0.8;
         }
     </style>
+</head>
 
 <body>
-
-<div class="app-wrapper">
-    @auth
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <aside class="sidebar-custom" id="sidebar">
-        <div class="sidebar-header">
-            <h4 class="sidebar-title">GriyaSoft</h4>
-            <hr class="sidebar-divider">
-        </div>
-
-        <nav class="sidebar-menu">
-            @if(auth()->user()->role === 'siswa')
-                <a href="{{ route('siswa.dashboard') }}" class="sidebar-item {{ request()->routeIs('siswa.dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
-                </a>
-                <a href="{{ route('siswa.riwayat-presensi') }}" class="sidebar-item {{ request()->routeIs('siswa.riwayat-presensi') ? 'active' : '' }}">
-                    <i class="bi bi-clock-history"></i> <span>Riwayat Presensi</span>
-                </a>
-                <a href="{{ route('siswa.tagihan.index') }}" class="sidebar-item {{ request()->routeIs('siswa.tagihan.index') ? 'active' : '' }}">
-                    <i class="bi bi-wallet2"></i> <span>Tagihan Saya</span>
-                </a>
-            @endif
-
-            @if(auth()->user()->role === 'admin')
-                <a href="{{ route('admin.dashboard') }}" class="sidebar-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-grid-1x2-fill"></i> <span>Dashboard</span>
-                </a>
-                <a href="{{ route('admin.siswa.index') }}" class="sidebar-item {{ request()->routeIs('admin.siswa.index') ? 'active' : '' }}">
-                    <i class="bi bi-people-fill"></i> <span>Manajemen Siswa</span>
-                </a>
-                <a href="{{ route('admin.sekolah.index') }}" class="sidebar-item {{ request()->routeIs('admin.sekolah.index') ? 'active' : '' }}">
-                    <i class="bi bi-building"></i> <span>Manajemen Sekolah</span>
-                </a>
-                <a href="{{ route('admin.pembayaran.index') }}" class="sidebar-item {{ request()->routeIs('admin.pembayaran.index') ? 'active' : '' }}">
-                    <i class="bi bi-wallet2"></i> <span>Manajemen Pembayaran</span>
-                </a>
-                <a href="{{ route('admin.presensi') }}" class="sidebar-item {{ request()->routeIs('admin.presensi') ? 'active' : '' }}">
-                    <i class="bi bi-calendar-check-fill"></i> <span>Manajemen Absensi</span>
-                </a>
-
-                <a href="{{ route('admin.setting.jam-kerja') }}" class="sidebar-item {{ request()->routeIs('admin.setting.jam-kerja') ? 'active' : '' }}">
-                    <i class="bi bi-clock-fill"></i> <span>Pengaturan Jam Kerja</span>
-                </a>
-            @endif
-        </nav>
-
-        <div class="sidebar-footer">
-            <form action="{{ route('logout') }}" method="POST" id="logout-form">
-                @csrf
-                <button type="button" onclick="confirmLogout()" class="sidebar-item border-0 bg-transparent w-100 text-danger text-start">
-                    <i class="bi bi-box-arrow-left"></i> <span>Logout</span>
-                </button>
-            </form>
-        </div>
-    </aside>
-    @endauth
-
-    {{-- KONTEN UTAMA --}}
-    <main class="@auth main-wrapper @else py-4 @endauth">
+    <div class="app-wrapper">
         @auth
-        <div class="dashboard-header d-flex justify-content-between align-items-center mb-4">
-            {{-- JUDUL HALAMAN --}}
-            <h1 class="dashboard-title h3 fw-bold mb-0">@yield('page_title', 'Dashboard')</h1>
-            
-            {{-- INFO USER --}}
-            @php
-                $profileRoute = (auth()->user()->role === 'admin') 
-                                ? route('admin.profile') 
-                                : route('siswa.profile');
-            @endphp
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="sidebar-custom" id="sidebar">
+            <div class="sidebar-header">
+                <h4 class="sidebar-title">GriyaSoft</h4>
+                <hr class="sidebar-divider">
+            </div>
 
-            <a href="{{ $profileRoute }}" class="text-decoration-none text-dark">
-                <div class="dashboard-user d-flex align-items-center" style="cursor: pointer;">
-                    <div class="text-end me-3 d-none d-sm-block">
-                        <strong class="d-block">{{ auth()->user()->nama_lengkap }}</strong>
-                        <small class="text-muted">{{ auth()->user()->email }}</small>
-                    </div>
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama_lengkap) }}&background=0D6EFD&color=fff" 
-                        class="rounded-circle border border-2 border-primary border-opacity-10" 
-                        width="40" height="40" alt="Avatar">
-                </div>
-            </a>
-        </div>
+            <nav class="sidebar-menu">
+                @if(auth()->user()->role === 'siswa')
+                    <a href="{{ route('siswa.dashboard') }}" class="sidebar-item {{ request()->routeIs('siswa.dashboard') ? 'active' : '' }}">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ route('siswa.riwayat-presensi') }}" class="sidebar-item {{ request()->routeIs('siswa.riwayat-presensi') ? 'active' : '' }}">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Riwayat Presensi</span>
+                    </a>
+                    <a href="{{ route('siswa.tagihan.index') }}" class="sidebar-item {{ request()->routeIs('siswa.tagihan.index') ? 'active' : '' }}">
+                        <i class="bi bi-wallet2"></i>
+                        <span>Tagihan Saya</span>
+                    </a>
+                @endif
+
+                @if(auth()->user()->role === 'admin')
+                    <a href="{{ route('admin.dashboard') }}" class="sidebar-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ route('admin.siswa.index') }}" class="sidebar-item {{ request()->routeIs('admin.siswa.index') ? 'active' : '' }}">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Manajemen Siswa</span>
+                    </a>
+                    <a href="{{ route('admin.sekolah.index') }}" class="sidebar-item {{ request()->routeIs('admin.sekolah.index') ? 'active' : '' }}">
+                        <i class="bi bi-building"></i>
+                        <span>Manajemen Sekolah</span>
+                    </a>
+                    <a href="{{ route('admin.pembayaran.index') }}" class="sidebar-item {{ request()->routeIs('admin.pembayaran.index') ? 'active' : '' }}">
+                        <i class="bi bi-wallet2"></i>
+                        <span>Manajemen Pembayaran</span>
+                    </a>
+                    <a href="{{ route('admin.presensi') }}" class="sidebar-item {{ request()->routeIs('admin.presensi') ? 'active' : '' }}">
+                        <i class="bi bi-calendar-check-fill"></i>
+                        <span>Manajemen Absensi</span>
+                    </a>
+                    <a href="{{ route('admin.setting.jam-kerja') }}" class="sidebar-item {{ request()->routeIs('admin.setting.jam-kerja') ? 'active' : '' }}">
+                        <i class="bi bi-clock-fill"></i>
+                        <span>Pengaturan Jam Kerja</span>
+                    </a>
+                @endif
+            </nav>
+
+            <div class="sidebar-footer">
+                <form action="{{ route('logout') }}" method="POST" id="logout-form">
+                    @csrf
+                    <button type="button" onclick="confirmLogout()" class="sidebar-item border-0 bg-transparent w-100 text-danger text-start">
+                        <i class="bi bi-box-arrow-left"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <button class="sidebar-toggle-btn" id="sidebarToggle">
+            <i class="bi bi-list"></i>
+        </button>
         @endauth
 
-        {{-- ISI KONTEN DARI BLADE ANAK --}}
-        @yield('content')
-    </main>
+        <main class="@auth main-wrapper @else py-4 @endauth">
+            @auth
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">@yield('page_title', 'Dashboard')</h1>
+                
+                @php
+                    $profileRoute = (auth()->user()->role === 'admin') 
+                                    ? route('admin.profile') 
+                                    : route('siswa.profile');
+                @endphp
 
-    @auth
-    <button class="sidebar-toggle-btn" id="sidebarToggle">
-        <i class="bi bi-list"></i>
-    </button>
-    @endauth
-</div>
+                <a href="{{ $profileRoute }}" class="text-decoration-none text-dark">
+                    <div class="dashboard-user">
+                        <div class="text-end me-3 d-none d-sm-block dashboard-user-email">
+                            <strong>{{ auth()->user()->nama_lengkap }}</strong>
+                            <small class="text-muted d-block">{{ auth()->user()->email }}</small>
+                        </div>
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama_lengkap) }}&background=0D6EFD&color=fff" 
+                            class="rounded-circle border border-2 border-primary border-opacity-10" 
+                            width="40" 
+                            height="40" 
+                            alt="Avatar">
+                    </div>
+                </a>
+            </div>
+            @endauth
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
+            @yield('content')
+        </main>
+    </div>
 
-    function confirmLogout() {
-    Swal.fire({
-        title: 'Apakah anda yakin?',
-        text: "Anda akan keluar dari sesi aplikasi ini.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Ya, Logout!',
-        cancelButtonText: 'Batal',
-        reverseButtons: true // Membuat tombol Batal di kiri dan Logout di kanan
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Jika user klik "Ya", jalankan submit form
-            document.getElementById('logout-form').submit();
-        }
-    })
-}
-    document.addEventListener('DOMContentLoaded', function () {
-        const lightBtn = document.getElementById('lightBtn');
-        const darkBtn = document.getElementById('darkBtn');
-        const body = document.body;
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        if (savedTheme === 'dark') {
-            body.classList.add('dark-mode');
-        }
 
-        lightBtn?.addEventListener('click', () => {
-            body.classList.remove('dark-mode');
-            localStorage.setItem('theme', 'light');
+    <script>
+        $(document).ready(function() {
+            $('select[name="siswa_id[]"]').select2({
+                placeholder: "-- Cari Nama Siswa --",
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#modalTambahTagihan')
+            });
         });
 
-        darkBtn?.addEventListener('click', () => {
-            body.classList.add('dark-mode');
-            localStorage.setItem('theme', 'dark');
-        });
-
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        sidebarToggle?.addEventListener('click', () => {
-            sidebar.classList.toggle('show');
-        });
-
-        function toggleSidebar() {
-            sidebar.classList.toggle('show');
-            overlay.classList.toggle('show');
+        function confirmLogout() {
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: "Anda akan keluar dari sesi aplikasi ini.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Logout!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            });
         }
 
-        sidebarToggle?.addEventListener('click', toggleSidebar);
-        overlay?.addEventListener('click', toggleSidebar);
-    });
-</script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body;
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-mode');
+            }
+
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            function toggleSidebar() {
+                sidebar?.classList.toggle('show');
+                overlay?.classList.toggle('show');
+            }
+
+            sidebarToggle?.addEventListener('click', toggleSidebar);
+            overlay?.addEventListener('click', toggleSidebar);
+        });
+    </script>
 </body>
 </html>

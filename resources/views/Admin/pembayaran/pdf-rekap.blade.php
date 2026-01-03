@@ -19,7 +19,7 @@
         .status-lunas { color: #28a745; font-weight: bold; }
         .status-menunggu { color: #f39c12; font-weight: bold; }
         .status-ditolak { color: #d33; font-weight: bold; }
-        
+        .status-belum-bayar { color: #888; font-weight: bold; }
         .footer { margin-top: 30px; }
         .signature { float: right; width: 200px; text-align: center; margin-top: 20px; }
         .signature-space { height: 60px; }
@@ -57,26 +57,46 @@
         <tbody>
             @php $total = 0; @endphp
             @foreach($data as $index => $p)
-            @php $total += ($p->status == 'dibayar' ? ($p->nominal_bayar ?? $p->tagihan->nominal) : 0); @endphp
+            {{-- Kalkulasi Total --}}
+            @php 
+                $nominal = $p->tagihan->nominal ?? 0;
+                $total += ($p->status == 'dibayar' ? $nominal : 0); 
+            @endphp
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
-                <td>
-                    <span class="fw-bold">{{ $p->siswa->user->nama_lengkap }}</span><br>
-                    <small>NISN: {{ $p->siswa->nisn }}</small>
-                </td>
-                <td>{{ $p->tagihan->nama_tagihan }}</td>
+                
+                {{-- 1. NAMA SISWA --}}
+                {{-- Jalur: TagihanSiswa -> Siswa -> User -> nama_lengkap --}}
+                <td>{{ $p->siswa->user->nama_lengkap ?? 'Nama Tidak Ditemukan' }}</td>
+                
+                {{-- 2. NAMA TAGIHAN --}}
+                <td>{{ $p->tagihan->nama_tagihan ?? '-' }}</td>
+                
+                {{-- 3. BULAN KE --}}
                 <td class="text-center">{{ $p->bulan_ke }}</td>
-                <td class="text-right">Rp {{ number_format($p->nominal_bayar ?? $p->tagihan->nominal, 0, ',', '.') }}</td>
+                
+                {{-- 4. NOMINAL --}}
+                <td class="text-right">Rp {{ number_format($nominal, 0, ',', '.') }}</td>
+                
+                {{-- 5. STATUS --}}
                 <td class="text-center">
-                    @if($p->status == 'dibayar')
+                    @if($p->status == 'dibayar' || $p->status == 'lunas')
                         <span class="status-lunas">LUNAS</span>
                     @elseif($p->status == 'menunggu')
-                        <span class="status-menunggu">MENUNGGU</span>
-                    @else
+                        <span class="status-menunggu">PENDING</span>
+                    @elseif($p->status == 'belum_bayar')
+                        <span class="status-belum-bayar">BELUM BAYAR</span>
+                    @elseif($p->status == 'ditolak')
                         <span class="status-ditolak">DITOLAK</span>
+                    @else
+                        <span class="text-muted">{{ strtoupper($p->status) }}</span>
                     @endif
                 </td>
-                <td class="text-center">{{ $p->updated_at->format('d/m/Y') }}</td>
+                
+                {{-- 6. TANGGAL BAYAR --}}
+                <td class="text-center">
+                    {{ $p->tanggal_bayar ? \Carbon\Carbon::parse($p->tanggal_bayar)->format('d/m/Y') : '-' }}
+                </td>
             </tr>
             @endforeach
         </tbody>

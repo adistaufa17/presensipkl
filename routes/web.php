@@ -68,12 +68,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 // Group Siswa
 Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
+    // Profile
     Route::get('/profile', [ProfileSiswaController::class, 'index'])->name('profile');
+    
+    // Dashboard & Presensi
     Route::get('/dashboard', [PresensiController::class, 'index'])->name('dashboard');
     Route::post('/presensi/masuk', [PresensiController::class, 'absenMasuk'])->name('absenMasuk');
     Route::post('/presensi/pulang', [PresensiController::class, 'absenPulang'])->name('absenPulang');
     Route::post('/presensi/izin', [PresensiController::class, 'ajukanIzin'])->name('ajukanIzin');
     Route::get('/riwayat-presensi', [PresensiController::class, 'riwayat'])->name('riwayat-presensi');
+    
+    // Tagihan - PERBAIKAN DI SINI
     Route::get('/tagihan', [SiswaTagihanController::class, 'index'])->name('tagihan.index');
-    Route::post('/tagihan/bayar/{id}', [SiswaTagihanController::class, 'bayar'])->name('tagihan.bayar');
+    Route::post('/tagihan/{id}/bayar', [SiswaTagihanController::class, 'bayar'])->name('tagihan.bayar');
+    Route::get('/tagihan/{id}', [SiswaTagihanController::class, 'show'])->name('tagihan.show');
+    Route::put('/tagihan/{id}', [TagihanController::class, 'update'])
+    ->name('tagihan.update');
+
 });

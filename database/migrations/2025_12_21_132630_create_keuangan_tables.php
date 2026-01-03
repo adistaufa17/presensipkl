@@ -17,7 +17,6 @@ return new class extends Migration
 
         Schema::create('tagihans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('siswa_id')->constrained('siswas')->onDelete('cascade');
             $table->string('nama_tagihan'); // Misal: "Uang Kas Bulan Jan"
             $table->decimal('nominal', 12, 2);
             $table->date('jatuh_tempo');
@@ -38,6 +37,7 @@ return new class extends Migration
             $table->foreignId('dikonfirmasi_oleh')->nullable()->constrained('users');
             $table->text('catatan_admin')->nullable();
             $table->timestamps();
+            $table->unique(['siswa_id', 'tagihan_id', 'bulan_ke'], 'unique_tagihan_siswa');
         });
     }
 

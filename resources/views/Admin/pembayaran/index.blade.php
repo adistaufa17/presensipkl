@@ -166,53 +166,73 @@
         overflow: auto;
         max-height: 80vh; /* Agar tidak melebihi tinggi layar */
     }
+
+    .custom-select-tagihan option:checked {
+        background-color: #e9ecef linear-gradient(0deg, #e9ecef 0%, #e9ecef 100%);
+        color: #0d6efd;
+        font-weight: bold;
+        padding: 8px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .siswa-option {
+        padding: 8px;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    /* Efek hover agar lebih interaktif */
+    .siswa-option:hover {
+        background-color: #f1f4f9;
+    }
+
+  
 </style>
 
 <div class="container-fluid px-4 py-3">
     
     {{-- STATISTIK CARDS --}}
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="stats-card">
-            <div class="d-flex align-items-center">
-                <div class="stats-icon me-3" style="background: #fff3cd;">
-                    <i class="bi bi-hourglass-split text-warning"></i>
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon me-3" style="background: #fff3cd;">
+                        <i class="bi bi-hourglass-split text-warning"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-1 small fw-semibold" style="font-size: 12px; text-transform: uppercase;">Menunggu Konfirmasi</p>
+                        {{-- HAPUS ->count() DI SINI --}}
+                        <h3 class="stats-number mb-0" style="color: var(--primary-color);">{{ $pembayaranMenunggu ?? 0 }}</h3>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-muted mb-1 small fw-semibold" style="font-size: 12px; text-transform: uppercase;">Menunggu Konfirmasi</p>
-                    {{-- HAPUS ->count() DI SINI --}}
-                    <h3 class="stats-number mb-0" style="color: var(--primary-color);">{{ $pembayaranMenunggu ?? 0 }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon me-3" style="background: #d4edda;">
+                        <i class="bi bi-check-circle text-success"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-1 small fw-semibold" style="font-size: 12px; text-transform: uppercase;">Total Lunas</p>
+                        <h3 class="stats-number mb-0" style="color: var(--primary-color);">{{ $totalLunas ?? 0 }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon me-3" style="background: #f8d7da;">
+                        <i class="bi bi-person-x text-danger"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-1 small fw-semibold" style="font-size: 12px; text-transform: uppercase;">Belum Membayar</p>
+                        <h3 class="stats-number mb-0" style="color: var(--primary-color);">{{ $totalBelumBayar ?? 0 }}</h3>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="stats-card">
-            <div class="d-flex align-items-center">
-                <div class="stats-icon me-3" style="background: #d4edda;">
-                    <i class="bi bi-check-circle text-success"></i>
-                </div>
-                <div>
-                    <p class="text-muted mb-1 small fw-semibold" style="font-size: 12px; text-transform: uppercase;">Total Lunas</p>
-                    <h3 class="stats-number mb-0" style="color: var(--primary-color);">{{ $totalLunas ?? 0 }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="stats-card">
-            <div class="d-flex align-items-center">
-                <div class="stats-icon me-3" style="background: #f8d7da;">
-                    <i class="bi bi-person-x text-danger"></i>
-                </div>
-                <div>
-                    <p class="text-muted mb-1 small fw-semibold" style="font-size: 12px; text-transform: uppercase;">Belum Membayar</p>
-                    <h3 class="stats-number mb-0" style="color: var(--primary-color);">{{ $totalBelumBayar ?? 0 }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
     {{-- TAB NAVIGATION --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -257,8 +277,21 @@
                         <div class="col-md-3">
                             <select name="status" class="form-select form-select-custom">
                                 <option value="">Semua Status</option>
-                                <option value="menunggu" {{ request('status') == 'menunggu' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
-                                <option value="dibayar" {{ request('status') == 'dibayar' ? 'selected' : '' }}>Lunas</option>
+                                <option value="belum_bayar" {{ request('status') == 'belum_bayar' ? 'selected' : '' }}>
+                                    Belum Bayar
+                                </option>
+                                <option value="menunggu_konfirmasi" {{ request('status') == 'menunggu_konfirmasi' ? 'selected' : '' }}>
+                                    Menunggu Konfirmasi
+                                </option>
+                                <option value="dibayar" {{ request('status') == 'dibayar' ? 'selected' : '' }}>
+                                    Dibayar
+                                </option>
+                                <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>
+                                    Ditolak
+                                </option>
+                                <option value="terlambat" {{ request('status') == 'terlambat' ? 'selected' : '' }}>
+                                    Terlambat
+                                </option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -399,17 +432,18 @@
 
                                         {{-- Tombol Edit Massal --}}
                                         <button type="button" 
-                                                onclick="editTagihan(
-                                                    '{{ $t->id }}', 
-                                                    '{{ $t->nama_tagihan }}', 
-                                                    '{{ $t->nominal }}', 
-                                                    '{{ $t->tagihanSiswas->max('bulan_ke') ?? 1 }}'
-                                                )" 
-                                                class="btn btn-sm btn-warning btn-action rounded-pill px-3 text-white" 
-                                                title="Edit Tagihan">
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#modalEditTagihan"
+                                            onclick="editTagihan(
+                                                '{{ $t->id }}', 
+                                                '{{ addslashes($t->nama_tagihan) }}', 
+                                                '{{ $t->nominal }}', 
+                                                '{{ $t->tagihanSiswas->max('bulan_ke') ?? 1 }}',
+                                                '{{ htmlspecialchars($t->tagihanSiswas->pluck('siswa_id')->unique()->values()->toJson()) }}'
+                                            )" 
+                                            class="btn btn-sm btn-warning rounded-pill px-3 text-white">
                                             <i class="bi bi-pencil-square"></i>
                                         </button>
-
                                         {{-- Tombol Hapus Massal --}}
                                         <form action="{{ route('admin.tagihan.destroy', $t->id) }}" method="POST" 
                                             onsubmit="return confirm('Hapus tagihan ini untuk SELURUH siswa? Data transaksi yang terkait juga akan hilang.')">
@@ -458,13 +492,33 @@
                                 <small class="text-muted">Sistem akan otomatis membuat baris tagihan sebanyak bulan ini.</small>
                             </div>
                             <div class="mb-3">
+                                <label class="form-label fw-bold small">Edit Siswa (Tambah/Hapus)</label>
+                                <select name="siswa_id[]" id="tambah_siswa_id" class="form-select custom-select-tagihan" multiple="multiple" required>
+                                    @foreach(\App\Models\Siswa::with('user')->get() as $s)
+                                        <option value="{{ $s->id }}">{{ $s->user->nama_lengkap }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="mt-2">
+                                    <small class="text-muted d-block"><i class="bi bi-info-circle"></i> Gunakan <strong>Ctrl + Klik</strong> untuk memilih/melepas pilihan.</small>
+                                    <small class="text-primary d-block font-italic">* Nama yang berwarna biru/terblok adalah siswa yang masuk dalam tagihan ini.</small>
+                                </div>
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label">Tanggal Jatuh Tempo Pertama</label>
                                 <input type="date" name="jatuh_tempo_awal" class="form-control" required>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan Tagihan</button>
+                            <button type="submit" class="btn btn-primary">
+                                Simpan
+                            </button>
+
+                            <script>
+                            $('form').on('submit', function () {
+                                $(this).find('button[type=submit]').prop('disabled', true);
+                            });
+                            </script>                        
                         </div>
                     </form>
                 </div>
@@ -563,10 +617,19 @@
                                 <input type="number" name="jumlah_bulan" id="edit_jumlah_bulan" class="form-control" min="1" required>
                                 <small class="text-danger">*Menambah angka akan menambah tagihan baru, mengurangi angka hanya akan menghapus tagihan yang belum dibayar.</small>
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small">Edit Siswa (Tambah/Hapus)</label>
+                                <select name="siswa_id[]" id="edit_siswa_id" class="form-select" multiple="multiple" required>
+                                    @foreach(\App\Models\Siswa::with('user')->get() as $s)
+                                        <option value="{{ $s->id }}">{{ $s->user->nama_lengkap }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Update Massal</button>
+                            {{-- Tombol simpan yang benar adalah type="submit" untuk mengirim form --}}
+                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
@@ -664,37 +727,61 @@
             });
     }
 
-    // Tambahkan parameter 'jumlahBulan'
-    function editTagihan(id, nama, nominal, jumlahBulan) {
-        document.getElementById('formEditTagihan').action = '/admin/tagihan/' + id;
+dd($siswaLama, $siswaBaru, $siswaDihapus);
+
+
+    function editTagihan(id, nama, nominal, jumlahBulan, selectedSiswaIds) {
+        console.log("Edit tagihan ID:", id);
         
-        document.getElementById('edit_nama').value = nama;
-        document.getElementById('edit_nominal').value = nominal;
+        $('#formEditTagihan').attr('action', '/admin/tagihan/' + id);
+        $('#edit_nama').val(nama);
+        $('#edit_nominal').val(nominal);
+        $('#edit_jumlah_bulan').val(jumlahBulan);
         
-        // Set nilai jumlah bulan ke input modal
-        document.getElementById('edit_jumlah_bulan').value = jumlahBulan;
+        const selectSiswa = $('#edit_siswa_id');
+        if (selectSiswa.hasClass("select2-hidden-accessible")) {
+            selectSiswa.select2('destroy');
+        }
         
-        var modal = new bootstrap.Modal(document.getElementById('modalEditTagihan'));
-        modal.show();
+        selectSiswa.select2({
+            theme: 'bootstrap-5',
+            dropdownParent: $('#modalEditTagihan'),
+            width: '100%',
+            placeholder: "-- Pilih Siswa --"
+        });
+        
+        fetch(`/admin/tagihan/${id}/detail`)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Data from server:", data);
+                
+                const siswaIdsFromServer = [...new Set(data.data.map(item => item.siswa_id || item.siswa?.id))].filter(Boolean);
+                
+                console.log("Siswa IDs dari server:", siswaIdsFromServer);
+                
+                selectSiswa.val(siswaIdsFromServer).trigger('change');
+            })
+            .catch(error => {
+                console.error("Error fetching siswa data:", error);
+                try {
+                    const fallbackIds = JSON.parse(selectedSiswaIds).map(Number);
+                    selectSiswa.val(fallbackIds).trigger('change');
+                } catch (e) {
+                    console.error("Fallback failed:", e);
+                }
+            });
     }
 
-
+    $(document).ready(function() {
+        $('#modalEditTagihan').on('hidden.bs.modal', function () {
+            $('#edit_siswa_id').val(null).trigger('change');
+        });
+    });
     @if(session('success'))
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: '{!! session('success') !!}',
-            timer: 3000,
-            showConfirmButton: false
-        });
+        Swal.fire({ icon: 'success', title: 'Berhasil!', text: '{!! session('success') !!}', timer: 3000, showConfirmButton: false });
     @endif
-
     @if(session('error'))
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal!',
-            text: '{!! session('error') !!}',
-        });
+        Swal.fire({ icon: 'error', title: 'Gagal!', text: '{!! session('error') !!}' });
     @endif
 </script>
 

@@ -31,7 +31,6 @@
                 <div class="flex-grow-1">
                     <h5 class="fw-bold mb-1">{{ $siswa->user->nama_lengkap }}</h5>
                     <p class="text-muted mb-2 small">
-                        <span class="badge bg-light text-dark border me-2 small">{{ $siswa->nisn }}</span>
                         {{ $siswa->sekolah->nama_sekolah }}
                     </p>
                 </div>

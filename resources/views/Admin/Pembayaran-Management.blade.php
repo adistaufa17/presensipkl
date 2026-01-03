@@ -290,14 +290,41 @@
             <form action="{{ route('admin.tagihan.store') }}" method="POST">
                 @csrf
                 <div class="modal-body p-4">
+                    <div class="alert alert-info" style="border-radius: 8px; font-size: 13px;">
+                        <i class="bi bi-info-circle me-1"></i> Pilih satu atau beberapa siswa untuk mengirimkan tagihan ini secara massal.
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Pilih Siswa</label>
+                        <select name="siswa_id[]" class="form-select py-2" multiple="multiple" required style="width: 100%;">
+                            @php
+                                // Ambil ID siswa yang sudah punya tagihan aktif/berjalan
+                                $siswaSudahAda = \App\Models\Tagihan::where('status', 'berjalan')->pluck('siswa_id')->toArray();
+                            @endphp
+
+                            @foreach(\App\Models\Siswa::with('user')->get() as $s)
+                                @php $isExists = in_array($s->id, $siswaSudahAda); @endphp
+                                
+                                <option value="{{ $s->id }}" {{ $isExists ? 'data-exists="true"' : '' }}>
+                                    {{ $s->user->nama_lengkap }} 
+                                    ({{ $s->nis ?? 'No NIS' }}) 
+                                    {{ $isExists ? ' ⚠️ [Sudah Ada Tagihan]' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted" style="font-size: 11px;">*Gunakan Ctrl + Klik untuk memilih manual atau ketik nama di kolom pencarian.</small>
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Nama Tagihan</label>
-                        <input type="text" name="nama_tagihan" class="form-control py-2" placeholder="Contoh: SPP Bulanan Magang" required style="border-radius: 8px;">
+                        <input type="text" name="nama_tagihan" class="form-control py-2" placeholder="Contoh: SPP Januari" required style="border-radius: 8px;">
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Nominal per Bulan (Rp)</label>
                         <input type="number" name="nominal" class="form-control py-2" placeholder="0" required style="border-radius: 8px;">
                     </div>
+
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label fw-bold small">Durasi (Bulan)</label>
@@ -311,10 +338,51 @@
                 </div>
                 <div class="modal-footer border-0 px-4 pb-4">
                     <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary rounded-3 px-4 fw-bold">Kirim Tagihan</button>
+                    <button type="submit" class="btn btn-primary rounded-3 px-4 fw-bold">
+                        <i class="bi bi-send me-1"></i> Kirim Tagihan
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+$(function () {
+
+    // 🔒 Anti double submit
+    $('form').on('submit', function () {
+        $(this).find('button[type=submit]').prop('disabled', true);
+    });
+
+    // 🔽 Select2 safe init
+    function initSelect2() {
+        const $el = $('select[name="siswa_id[]"]');
+        if ($el.hasClass('select2-hidden-accessible')) return;
+
+        $el.select2({
+            placeholder: "-- Pilih Satu atau Beberapa Siswa --",
+            allowClear: true,
+            dropdownParent: $('#modalTambahTagihan'),
+            templateResult: formatSiswa
+        });
+    }
+
+    function formatSiswa(state) {
+        if (!state.id) return state.text;
+
+        const isExists = $(state.element).data('exists');
+        if (isExists) {
+            return $('<span style="color:#999;text-decoration:line-through;">' + state.text + '</span>');
+        }
+        return state.text;
+    }
+
+    $('#modalTambahTagihan').on('shown.bs.modal', function () {
+        initSelect2();
+    });
+
+});
+</script>
+@endpush
