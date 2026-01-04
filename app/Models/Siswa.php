@@ -41,4 +41,23 @@ class Siswa extends Model
     public function tagihans() {
         return $this->hasMany(Tagihan::class);
     }
+
+    public function getStatusPklAttribute()
+    {
+        if (!$this->tanggal_mulai || !$this->tanggal_selesai) {
+            return 'belum_mulai';
+        }
+
+        $now = Carbon::now();
+
+        if ($now->lt($this->tanggal_mulai)) {
+            return 'belum_mulai';
+        }
+
+        if ($now->between($this->tanggal_mulai, $this->tanggal_selesai)) {
+            return 'aktif';
+        }
+
+        return 'selesai';
+    }
 }

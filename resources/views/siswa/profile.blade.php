@@ -20,9 +20,30 @@
                             <div class="position-absolute bottom-0 end-0 bg-success border border-white border-3 rounded-circle" style="width: 22px; height: 22px;"></div>
                         </div>
                         <h3 class="fw-bold mb-1 text-dark">{{ $user->nama_lengkap }}</h3>
-                        <span class="badge bg-primary-subtle text-primary border-0 px-3 py-2 rounded-pill fw-bold">
-                            <i class="bi bi-person-badge me-1"></i> Siswa PKL Aktif
+                            @php
+                            $now = \Carbon\Carbon::now();
+                            $mulai = \Carbon\Carbon::parse($siswa->tanggal_mulai_pkl);
+                            $selesai = \Carbon\Carbon::parse($siswa->tanggal_selesai_pkl);
+
+                            if ($now->between($mulai, $selesai)) {
+                                $label = 'Siswa PKL Aktif';
+                                $icon = 'bi-person-badge';
+                                $class = 'bg-primary-subtle text-primary';
+                            } elseif ($now->lt($mulai)) {
+                                $label = 'PKL Belum Dimulai';
+                                $icon = 'bi-hourglass-split';
+                                $class = 'bg-warning-subtle text-warning';
+                            } else {
+                                $label = 'PKL Selesai';
+                                $icon = 'bi-check-circle-fill';
+                                $class = 'bg-secondary-subtle text-secondary';
+                            }
+                        @endphp
+
+                        <span class="badge {{ $class }} border-0 px-3 py-2 rounded-pill fw-bold">
+                            <i class="bi {{ $icon }} me-1"></i> {{ $label }}
                         </span>
+
                     </div>
 
                     <div class="mt-5">
@@ -75,7 +96,9 @@
                                     <label class="text-muted small text-uppercase fw-bold d-block mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Tanggal Mulai PKL</label>
                                     <div class="d-flex align-items-center">
                                         <i class="bi bi-calendar-check me-2 text-primary"></i>
-                                        <h6 class="mb-0 fw-bold text-dark">{{ $user->created_at->translatedFormat('d F Y') }}</h6>
+                                        <h6 class="mb-0 fw-bold text-dark">
+                                            {{ \Carbon\Carbon::parse($siswa->tanggal_mulai_pkl)->translatedFormat('d F Y') }}
+                                        </h6>
                                     </div>
                                 </div>
                             </div>

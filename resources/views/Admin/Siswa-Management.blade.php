@@ -171,10 +171,31 @@
                             </div>
                         </td>
                         <td>
-                            <span class="status-badge" style="background: #e7f1ff; color: #0d6efd;">
-                                {{ strtoupper($s->status) }}
+                            @php
+                                $now = \Carbon\Carbon::now();
+                                $mulai = \Carbon\Carbon::parse($s->tanggal_mulai_pkl);
+                                $selesai = \Carbon\Carbon::parse($s->tanggal_selesai_pkl);
+
+                                if ($now->between($mulai, $selesai)) {
+                                    $status = 'AKTIF';
+                                    $bg = '#e7f1ff';
+                                    $color = '#0d6efd';
+                                } elseif ($now->lt($mulai)) {
+                                    $status = 'BELUM MULAI';
+                                    $bg = '#fff3cd';
+                                    $color = '#856404';
+                                } else {
+                                    $status = 'SELESAI';
+                                    $bg = '#e2e3e5';
+                                    $color = '#41464b';
+                                }
+                            @endphp
+
+                            <span class="status-badge" style="background: {{ $bg }}; color: {{ $color }};">
+                                {{ $status }}
                             </span>
                         </td>
+
                         <td class="text-end">
                             <div class="d-flex justify-content-end gap-2">
                                 {{-- Tombol Edit --}}

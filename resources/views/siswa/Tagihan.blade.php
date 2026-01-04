@@ -112,12 +112,14 @@
                             <label class="form-label small fw-bold text-muted">Pilih File Foto/Scan Struk</label>
                             
                             {{-- PENTING: name="bukti_pembayaran" harus sesuai dengan validation di controller --}}
-                            <input type="file" 
-                                name="bukti_pembayaran" 
-                                class="form-control border-0 bg-light py-2" 
-                                accept="image/*" 
-                                required 
+                            <input type="file"
+                                name="bukti_pembayaran"
+                                data-id="{{ $t->id }}"
+                                class="form-control border-0 bg-light py-2"
+                                accept="image/*"
+                                required
                                 style="border-radius: 10px;">
+
                             
                             <div class="form-text small mt-2">Format: JPG, PNG (Maks. 5MB)</div>
                             
@@ -125,6 +127,7 @@
                             <div id="preview-{{ $t->id }}" class="mt-3" style="display: none;">
                                 <img src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
                             </div>
+
                         </div>
                         
                         <div class="modal-footer border-0 px-4 pb-4 mt-2">
@@ -162,19 +165,25 @@
 </style>
 
 {{-- JavaScript untuk preview gambar (opsional) --}}
-                    <script>
-                    document.querySelector('input[name="bukti_pembayaran"]').addEventListener('change', function(e) {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function(event) {
-                                const preview = document.querySelector('#preview-{{ $t->id }}');
-                                const img = preview.querySelector('img');
-                                img.src = event.target.result;
-                                preview.style.display = 'block';
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                    </script>
+<script>
+document.querySelectorAll('input[name="bukti_pembayaran"]').forEach(input => {
+    input.addEventListener('change', function(e) {
+        const id = this.dataset.id;
+        const file = e.target.files[0];
+
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const preview = document.querySelector('#preview-' + id);
+            if (!preview) return;
+
+            preview.querySelector('img').src = event.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    });
+});
+</script>
+
 @endsection
