@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('page_title', 'Riwayat Presensi')
-
 @section('content')
 <div class="container-fluid">
     {{-- Card Filter --}}
@@ -15,7 +13,7 @@
                         <select name="bulan" class="form-select border-0 bg-light">
                             @for($m=1; $m<=12; $m++)
                                 <option value="{{ sprintf('%02d', $m) }}" {{ $bulan == sprintf('%02d', $m) ? 'selected' : '' }}>
-                                    {{ Carbon\Carbon::create()->month($m)->locale('id')->isoFormat('MMMM') }}
+                                    {{ \Carbon\Carbon::create()->month($m)->locale('id')->isoFormat('MMMM') }}
                                 </option>
                             @endfor
                         </select>
@@ -41,7 +39,6 @@
         </div>
     </div>
 
-    {{-- Card Tabel --}}
     <div class="card border-0 shadow-sm" style="border-radius: 16px; border: 1px solid var(--border-color) !important;">
         <div class="card-body p-0"> {{-- P-0 agar tabel menempel rapi ke pinggir card --}}
             <div class="table-responsive">
@@ -64,8 +61,8 @@
                             <td>
                                 @if($r->status_kehadiran == 'hadir')
                                     <span class="badge bg-success-subtle text-success border-0 px-3 py-2 rounded-pill">Hadir</span>
-                                @elseif($r->status_kehadiran == 'telat')
-                                    <span class="badge bg-warning-subtle text-warning-emphasis border-0 px-3 py-2 rounded-pill">Telat</span>
+                                @elseif($r->status_kehadiran == 'terlambat')
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border-0 px-3 py-2 rounded-pill">Terlambat</span>
                                 @elseif(in_array($r->status_kehadiran, ['izin', 'sakit']))
                                     <span class="badge bg-info-subtle text-info-emphasis border-0 px-3 py-2 rounded-pill">{{ ucfirst($r->status_kehadiran) }}</span>
                                 @else
@@ -108,7 +105,6 @@
 </div>
 
 <style>
-    /* Menyesuaikan warna badge soft seperti desain modern */
     .bg-success-subtle { background-color: #d1e7dd !important; }
     .bg-warning-subtle { background-color: #fff3cd !important; }
     .bg-info-subtle { background-color: #cff4fc !important; }

@@ -14,15 +14,14 @@ class TagihanController extends Controller
     public function index()
     {
         $tagihans = Tagihan::with('tagihanSiswas.siswa.user')->get();
-
         return view('admin.tagihan.index', compact('tagihans'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'siswa_id'         => 'required|array', // Validasi array
-            'siswa_id.*'       => 'exists:siswas,id', // Validasi tiap ID didalam array
+            'siswa_id'         => 'required|array', 
+            'siswa_id.*'       => 'exists:siswas,id', 
             'nama_tagihan'     => 'required',
             'nominal'          => 'required|numeric',
             'jumlah_bulan'     => 'required|integer|min:1',
@@ -31,9 +30,7 @@ class TagihanController extends Controller
 
         try {
             \DB::beginTransaction();
-
             $selectedSiswa = $request->siswa_id;
-
             foreach ($selectedSiswa as $idSiswa) {
                 $siswa = \App\Models\Siswa::findOrFail($idSiswa);
 
@@ -48,8 +45,6 @@ class TagihanController extends Controller
                     ]
                 );
 
-
-                // 2. Buat Detail per Bulan
                 for ($i = 1; $i <= $request->jumlah_bulan; $i++) {
                     $jatuhTempo = \Carbon\Carbon::parse($request->jatuh_tempo_awal)->addMonths($i - 1);
                     
@@ -98,9 +93,9 @@ class TagihanController extends Controller
 
             $formattedData = $details->map(function($item) {
                 return [
-                    'siswa_id' => $item->siswa_id, // ← TAMBAHKAN INI
+                    'siswa_id' => $item->siswa_id,
                     'siswa' => [
-                        'id' => $item->siswa_id, // ← TAMBAHKAN INI JUGA
+                        'id' => $item->siswa_id, 
                         'user' => [
                             'nama_lengkap' => $item->siswa->user->nama_lengkap ?? 'N/A'
                         ]
@@ -137,26 +132,22 @@ class TagihanController extends Controller
             'nominal' => $request->nominal,
         ]);
 
-        // Siswa lama
         $siswaLama = TagihanSiswa::where('tagihan_id', $tagihan->id)
             ->pluck('siswa_id')
             ->unique()
             ->toArray();
 
-        // Siswa baru
         $siswaBaru = $request->siswa_id ?? [];
 
-        // SISWA DIHAPUS
         $siswaDihapus = array_diff($siswaLama, $siswaBaru);
 
         if (!empty($siswaDihapus)) {
             TagihanSiswa::where('tagihan_id', $tagihan->id)
                 ->whereIn('siswa_id', $siswaDihapus)
-                ->where('status', 'belum_bayar') // 🔥 FIX UTAMA
+                ->where('status', 'belum_bayar') 
                 ->delete();
         }
 
-        // SISWA DITAMBAH
         foreach ($siswaBaru as $siswaId) {
             for ($bulan = 1; $bulan <= $request->jumlah_bulan; $bulan++) {
                 TagihanSiswa::firstOrCreate([

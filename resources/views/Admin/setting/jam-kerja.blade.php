@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('page_title', 'Pengaturan Jam Kerja')
-
 @section('content')
 
 <style>
@@ -277,7 +275,6 @@
     <div class="row">
         <div class="col-12">
             
-            {{-- ALERT MESSAGES --}}
             @if(session('error'))
             <div class="alert-custom alert-danger-custom">
                 <i class="bi bi-exclamation-octagon-fill"></i>
@@ -316,7 +313,6 @@
 
                     <div class="content-card-body">
                         
-                        {{-- STATUS AKTIF --}}
                         <div class="switch-container mb-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="flex-grow-1">
@@ -334,9 +330,7 @@
                             </div>
                         </div>
 
-                        {{-- JAM KERJA INPUTS --}}
                         <div class="row g-4">
-                            {{-- Jam Masuk --}}
                             <div class="col-md-6">
                                 <label class="form-label">Jam Masuk</label>
                                 <div class="input-group">
@@ -351,7 +345,6 @@
                                 </small>
                             </div>
 
-                            {{-- Batas Telat --}}
                             <div class="col-md-6">
                                 <label class="form-label">Batas Akhir Masuk</label>
                                 <div class="input-group">
@@ -366,7 +359,6 @@
                                 </small>
                             </div>
 
-                            {{-- Jam Pulang --}}
                             <div class="col-md-12">
                                 <label class="form-label">Jam Pulang</label>
                                 <div class="input-group">
@@ -382,7 +374,6 @@
                             </div>
                         </div>
 
-                        {{-- INFO BOX --}}
                         <div class="info-box">
                             <div class="d-flex align-items-start gap-3">
                                 <i class="bi bi-info-circle-fill"></i>
@@ -408,7 +399,6 @@
                 </form>
             </div>
 
-            {{-- PREVIEW CARD --}}
             <div class="content-card mt-4">
                 <div class="content-card-header">
                     <h6 class="section-title">
@@ -478,7 +468,6 @@
         });
     }
 
-    // Auto dismiss alerts after 5 seconds
     setTimeout(function() {
         const alerts = document.querySelectorAll('.alert-custom');
         alerts.forEach(alert => {

@@ -21,7 +21,6 @@ class PresensiController extends Controller
         $status = $request->get('status', 'all');
         $sekolah = $request->get('sekolah', 'all');
         $search = $request->get('search');
-        
         $query = Presensi::with(['siswa.user', 'siswa.sekolah']);
         
         if ($tanggalMulai && $tanggalAkhir) {
@@ -44,12 +43,10 @@ class PresensiController extends Controller
             });
         }
 
-
         $presensis = $query->orderBy('tanggal', 'desc')
                           ->orderBy('jam_masuk', 'desc')
                           ->paginate(20)
                           ->appends($request->all());
-        
         $statsQuery = Presensi::query(); 
         if ($tanggalMulai && $tanggalAkhir) {
             $statsQuery->whereBetween('tanggal', [$tanggalMulai, $tanggalAkhir]);
@@ -60,7 +57,7 @@ class PresensiController extends Controller
         $stats = [
             'total' => $statsQuery->count(),
             'hadir' => (clone $statsQuery)->where('status_kehadiran', 'hadir')->count(),
-            'telat' => (clone $statsQuery)->where('status_kehadiran', 'telat')->count(),
+            'terlambat' => (clone $statsQuery)->where('status_kehadiran', 'terlambat')->count(),
             'izin' => (clone $statsQuery)->whereIn('status_kehadiran', ['izin', 'sakit'])->count(),
             'alpha' => (clone $statsQuery)->where('status_kehadiran', 'alpha')->count(),
         ];
@@ -92,10 +89,10 @@ class PresensiController extends Controller
                 ->whereMonth('tanggal', Carbon::parse($bulan)->month)
                 ->where('status_kehadiran', 'hadir')
                 ->count(),
-            'telat' => Presensi::where('siswa_id', $siswaId)
+            'terlambat' => Presensi::where('siswa_id', $siswaId)
                 ->whereYear('tanggal', Carbon::parse($bulan)->year)
                 ->whereMonth('tanggal', Carbon::parse($bulan)->month)
-                ->where('status_kehadiran', 'telat')
+                ->where('status_kehadiran', 'terlambat')
                 ->count(),
             'izin' => Presensi::where('siswa_id', $siswaId)
                 ->whereYear('tanggal', Carbon::parse($bulan)->year)
@@ -130,20 +127,17 @@ class PresensiController extends Controller
         $today = now()->format('Y-m-d');
         $jamSekarang = now()->format('H:i');
         $batasMasuk = '08:00';
-
         $presensi = Presensi::where('siswa_id', $siswaId)
                             ->whereDate('tanggal', $today)
                             ->first();
-
-        $statusBaru = ($jamSekarang > $batasMasuk) ? 'telat' : 'hadir';
+        $statusBaru = ($jamSekarang > $batasMasuk) ? 'terlambat' : 'hadir';
 
         if ($presensi) {
-            // JIKA STATUSNYA ALPHA (Dihasilkan oleh sistem)
             if ($presensi->status_kehadiran == 'alpha') {
                 $presensi->update([
                     'status_kehadiran' => $statusBaru,
                     'jam_masuk' => now(),
-                    'keterangan_izin' => null, // <--- TAMBAHKAN INI: Menghapus teks "Tidak hadir tanpa keterangan"
+                    'keterangan_izin' => null,
                     'keterangan' => 'Absen setelah Alpha (Otomatis Update)'
                 ]);
 
@@ -153,7 +147,6 @@ class PresensiController extends Controller
             return redirect()->back()->with('error', 'Anda sudah melakukan presensi hari ini.');
         }
 
-        // JIKA BELUM ADA DATA SAMA SEKALI
         Presensi::create([
             'siswa_id' => $siswaId,
             'tanggal' => $today,
@@ -167,15 +160,10 @@ class PresensiController extends Controller
 
     public function exportPDF(Request $request, $siswaId)
     {
-        // 1. Ambil data siswa beserta relasi sekolah
         $siswa = Siswa::with(['user', 'sekolah'])->findOrFail($siswaId);
-        
-        // 2. Ambil data sekolah dari relasi siswa untuk dikirim ke view
         $sekolah = $siswa->sekolah; 
-
         $bulan = $request->get('bulan', Carbon::now()->format('Y-m'));
         $bulanNama = Carbon::parse($bulan)->translatedFormat('F Y');
-        
         $presensis = Presensi::where('siswa_id', $siswaId)
             ->whereYear('tanggal', Carbon::parse($bulan)->year)
             ->whereMonth('tanggal', Carbon::parse($bulan)->month)
@@ -184,25 +172,21 @@ class PresensiController extends Controller
         
         $stats = [
             'hadir' => $presensis->where('status_kehadiran', 'hadir')->count(),
-            'telat' => $presensis->where('status_kehadiran', 'telat')->count(),
+            'terlambat' => $presensis->where('status_kehadiran', 'terlambat')->count(),
             'izin' => $presensis->whereIn('status_kehadiran', ['izin', 'sakit'])->count(),
             'alpha' => $presensis->where('status_kehadiran', 'alpha')->count(),
         ];
-
-        // 3. Sesuaikan dengan template Blade Anda yang meminta $rekapData
-        // Karena ini export per siswa, kita buat array yang berisi 1 data saja
         $rekapData = [
             [
                 'siswa' => $siswa,
                 'hadir' => $stats['hadir'],
-                'telat' => $stats['telat'],
+                'terlambat' => $stats['terlambat'],
                 'izin' => $stats['izin'],
                 'alpha' => $stats['alpha'],
             ]
         ];
         
         $totalHariKerja = Carbon::parse($bulan)->daysInMonth;
-        
         $pdf = PDF::loadView('admin.presensi.pdf-rekap', compact(
             'siswa',
             'sekolah',
@@ -240,7 +224,7 @@ class PresensiController extends Controller
             $rekapData[] = [
                 'siswa' => $siswa,
                 'hadir' => $presensis->where('status_kehadiran', 'hadir')->count(),
-                'telat' => $presensis->where('status_kehadiran', 'telat')->count(),
+                'terlambat' => $presensis->where('status_kehadiran', 'terlambat')->count(),
                 'izin' => $presensis->whereIn('status_kehadiran', ['izin', 'sakit'])->count(),
                 'alpha' => $presensis->where('status_kehadiran', 'alpha')->count(),
             ];
@@ -270,7 +254,7 @@ class PresensiController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'status_kehadiran' => 'required|in:hadir,telat,izin,sakit,alpha',
+            'status_kehadiran' => 'required|in:hadir,terlambat,izin,sakit,alpha',
             'keterangan_izin' => 'nullable|string|max:500'
         ]);
         

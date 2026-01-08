@@ -105,7 +105,6 @@
         box-shadow: 0 0 0 3px rgba(33, 52, 72, 0.1);
     }
 
-    /* Fix text wrapping */
     .text-nowrap-ellipsis {
         white-space: nowrap;
         overflow: hidden;
@@ -163,7 +162,6 @@
         transform: scale(1.1);
     }
 
-    /* Modal Preview Styles */
     #modalImagePreview .modal-dialog {
         max-width: 90vw;
     }
@@ -213,11 +211,11 @@
                         <i class="bi bi-exclamation-circle-fill text-warning fs-3"></i>
                     </div>
                 </div>
-                <h2 class="fw-bold text-warning mb-1 text-center">{{ $stats['telat'] ?? 0 }}</h2>
+                <h2 class="fw-bold text-warning mb-1 text-center">{{ $stats['terlambat'] ?? 0 }}</h2>
                 <p class="text-muted mb-0 small text-center">Terlambat</p>
                 @if(($stats['total'] ?? 0) > 0)
                 <div class="progress mt-3" style="height: 6px;">
-                    <div class="progress-bar bg-warning" style="width: {{ ($stats['telat']/$stats['total'])*100 }}%"></div>
+                    <div class="progress-bar bg-warning" style="width: {{ ($stats['terlambat']/$stats['total'])*100 }}%"></div>
                 </div>
                 @endif
             </div>
@@ -317,7 +315,7 @@
                         <select name="status" class="form-select form-select-custom">
                             <option value="all" {{ $status == 'all' ? 'selected' : '' }}>Semua</option>
                             <option value="hadir" {{ $status == 'hadir' ? 'selected' : '' }}>Hadir</option>
-                            <option value="telat" {{ $status == 'telat' ? 'selected' : '' }}>Terlambat</option>
+                            <option value="terlambat" {{ $status == 'terlambat' ? 'selected' : '' }}>Terlambat</option>
                             <option value="izin" {{ $status == 'izin' ? 'selected' : '' }}>Izin</option>
                             <option value="sakit" {{ $status == 'sakit' ? 'selected' : '' }}>Sakit</option>
                             <option value="alpha" {{ $status == 'alpha' ? 'selected' : '' }}>Alpha</option>
@@ -420,7 +418,7 @@
                             @php
                                 $statusColor = match($p->status_kehadiran) {
                                     'hadir' => 'success',
-                                    'telat' => 'warning',
+                                    'terlambat' => 'warning',
                                     'izin', 'sakit' => 'info',
                                     'alpha' => 'danger',
                                     default => 'secondary'
@@ -670,23 +668,15 @@ function confirmExport() {
     });
 }
 
-// Function untuk show image preview
 function showImagePreview(imageUrl, title) {
-    // Set image source
     document.getElementById('imagePreviewSrc').src = imageUrl;
-    
-    // Set title
     document.getElementById('imagePreviewTitle').textContent = title;
-    
-    // Set link untuk buka di tab baru
     document.getElementById('imagePreviewLink').href = imageUrl;
     
-    // Show modal
     const modal = new bootstrap.Modal(document.getElementById('modalImagePreview'));
     modal.show();
 }
 
-// Optional: Close modal saat klik gambar
 document.addEventListener('DOMContentLoaded', function() {
     const previewImg = document.getElementById('imagePreviewSrc');
     if (previewImg) {

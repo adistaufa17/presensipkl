@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -18,7 +17,6 @@
         color: var(--primary-color);
     }
 
-    /* HEADER JAM (Sesuai Wireframe) */
     .hero-section {
         text-align: center;
         padding: 40px 0;
@@ -48,7 +46,6 @@
         color: var(--text-muted);
     }
 
-    /* LAYOUT GRID RESPONSIVE */
     .dashboard-grid {
         display: grid;
         grid-template-columns: repeat(12, 1fr);
@@ -56,7 +53,6 @@
         padding: 20px;
     }
 
-    /* Desktop Default */
     .col-left { grid-column: span 4; }
     .col-center { grid-column: span 4; }
     .col-right { grid-column: span 4; }
@@ -73,20 +69,17 @@
         .col-left, .col-center, .col-right { grid-column: span 12; }
     }
 
-    /* Tablet (iPad/Laptop Kecil) */
     @media (max-width: 1100px) {
         .col-left { grid-column: span 5; }
         .col-center { grid-column: span 7; }
         .col-right { grid-column: span 12; }
     }
 
-    /* Mobile (Phone) */
     @media (max-width: 768px) {
         .col-left, .col-center, .col-right { grid-column: span 12; }
         #currentTime { font-size: 3rem !important; }
     }
 
-    /* CARD STYLING */
     .card-modern {
         background: white;
         border: 1px solid var(--border-color);
@@ -104,7 +97,6 @@
         margin-bottom: 20px;
     }
 
-    /* BUTTONS */
     .btn-outline-custom {
         border: 1px solid var(--border-color);
         background: white;
@@ -141,7 +133,6 @@
         font-size: 0.9rem;
     }
 
-    /* STATISTIK CHART (Wireframe Style) */
     .chart-container {
         display: flex;
         align-items: flex-end;
@@ -164,7 +155,6 @@
     .segment-late { background: #9ca3af; }
     .segment-absent { background: #e5e7eb; }
 
-    /* TABLE LOG BULANAN */
     .table-log {
         width: 100%;
         border-collapse: collapse;
@@ -210,7 +200,6 @@
         text-align: center;
     }
 
-    /* TAGIHAN CARD */
     .card-modern-tagihan {
         background: white;
         border: 1px solid var(--border-color);
@@ -271,7 +260,6 @@
         max-width: 90%;
     }
 
-    /* Footer: Harga & Tombol */
     .tagihan-footer {
         display: flex;
         justify-content: space-between;
@@ -357,7 +345,6 @@
         border: 1px solid #ffe0b2;
     }
 
-    /* MODAL STYLE */
     .modal-content-custom {
         border-radius: 24px !important;
         border: none !important;
@@ -526,7 +513,7 @@
                                 <div class="d-flex justify-content-end mt-3">
                                     @if($presensiHariIni->status_kehadiran == 'hadir')
                                         <span class="badge-status success">Tepat Waktu</span>
-                                    @elseif($presensiHariIni->status_kehadiran == 'telat')
+                                    @elseif($presensiHariIni->status_kehadiran == 'terlambat')
                                         <span class="badge-status danger">Terlambat</span>
                                     @elseif($presensiHariIni->status_kehadiran == 'izin')
                                         <span class="badge-status warning">
@@ -589,7 +576,7 @@
 
                     <div class="d-flex justify-content-center gap-3 mt-3">
                         <small><i class="bi bi-circle-fill me-1" style="color:#213448"></i> Hadir</small>
-                        <small><i class="bi bi-circle-fill me-1" style="color:#adb5bd"></i> Telat</small>
+                        <small><i class="bi bi-circle-fill me-1" style="color:#adb5bd"></i> Terlambat</small>
                         <small><i class="bi bi-circle-fill me-1" style="color:#dc3545"></i> Alpa/Izin</small>
                     </div>
                 </div>
@@ -628,7 +615,6 @@
                     <a href="{{ route('siswa.riwayat-presensi') }}" class="see-more">See more →</a>            </div>
         </div>
 
-        {{-- KOLOM KANAN (TAGIHAN) --}}
         <div class="col-right">
             <div class="card-modern-tagihan">
                 <h2 class="fw-bold mb-0" style="font-size: 1.8rem;">Tagihan Keuangan</h2>
@@ -724,7 +710,6 @@
     </div>
 </div>
 
-{{-- Tambahkan di atas form modal --}}
 @if(session('error'))
 <script>
     Swal.fire('Error', '{{ session('error') }}', 'error');
@@ -878,10 +863,10 @@
         new Chart(ctx.getContext('2d'), {
             type: 'bar',
             data: {
-                labels: ['Hadir', 'Telat', 'Alpa/Izin'], // Label kategori
+                labels: ['Hadir', 'Terlambat', 'Alpa/Izin'], // Label kategori
                 datasets: [{
                     label: 'Jumlah Hari',
-                    data: [{{ $countHadir }}, {{ $countTelat }}, {{ $countAlpa }}],
+                    data: [{{ $countHadir }}, {{ $countTerlambat }}, {{ $countAlpa }}],
                     backgroundColor: [
                         '#213448', 
                         '#adb5bd',

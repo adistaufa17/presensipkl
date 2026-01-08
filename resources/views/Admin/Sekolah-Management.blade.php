@@ -4,17 +4,14 @@
 
 @section('content')
 <style>
-    /* Sinkronisasi lebar agar sejajar lurus dengan header layouts/app */
     .content-wrapper-fixed {
-        padding: 0 12px; /* Memberikan ruang agar tidak menempel ke sidebar tapi tetap lurus dengan header */
+        padding: 0 12px; 
     }
 
-    /* Penyesuaian Card agar sama dengan style Dashboard */
     .content-card-custom {
         background: #ffffff;
         border: 1px solid var(--border-color);
-        border-radius: var(--radius); /* Mengikuti 16px dari layout */
-        overflow: hidden;
+        border-radius: var(--radius);
     }
 
     .content-card-header {
@@ -44,7 +41,6 @@
         vertical-align: middle;
     }
 
-    /* Penyesuaian Modal agar konsisten */
     .modal-content {
         border-radius: var(--radius);
         border: none;

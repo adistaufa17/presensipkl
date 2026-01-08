@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('page_title', 'Profil Saya')
-
 @section('content')
 
 <style>
@@ -101,7 +99,6 @@
                             </span>
                         </div>
                         
-                        {{-- Anggota Sejak - WITH NULL CHECK --}}
                         <div class="info-box">
                             <small class="text-muted d-block text-uppercase fw-bold mb-2" style="font-size: 10px; letter-spacing: 1px;">Anggota Sejak</small>
                             <span class="text-dark fw-bold small">
@@ -114,7 +111,6 @@
                             </span>
                         </div>
 
-                        {{-- Additional Info: Last Login (Optional) --}}
                         @if(isset($user->last_login_at) && $user->last_login_at)
                         <div class="info-box">
                             <small class="text-muted d-block text-uppercase fw-bold mb-2" style="font-size: 10px; letter-spacing: 1px;">Login Terakhir</small>
@@ -129,11 +125,9 @@
             </div>
         </div>
 
-        {{-- Form Edit Profil (Kanan) --}}
         <div class="col-xl-8 col-lg-7">
             <div class="profile-card">
                 <div class="card-body p-4">
-                    {{-- Alert Success --}}
                     @if(session('success'))
                         <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
                             <i class="bi bi-check-circle-fill me-2 fs-5"></i>
@@ -142,7 +136,6 @@
                         </div>
                     @endif
 
-                    {{-- Alert Error Validation --}}
                     @if ($errors->any())
                         <div class="alert alert-danger border-0 rounded-4 mb-4">
                             <div class="d-flex align-items-center mb-2">
@@ -157,7 +150,6 @@
                         </div>
                     @endif
 
-                    {{-- Form Dinamis berdasarkan Role --}}
                     @php
                         $updateRoute = (auth()->user()->role === 'admin') 
                             ? route('admin.profile.update') 
@@ -212,7 +204,6 @@
 
                         <hr class="my-4 opacity-50" style="border-top: 1px dashed var(--border-color);">
 
-                        {{-- Section: Keamanan --}}
                         <div class="d-flex align-items-center mb-4">
                             <div class="bg-danger bg-opacity-10 p-2 rounded-3 me-3">
                                 <i class="bi bi-shield-lock-fill text-danger fs-4"></i>

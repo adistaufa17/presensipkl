@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('foto_masuk')->nullable();
             $table->decimal('latitude_masuk', 10, 8)->nullable();
             $table->decimal('longitude_masuk', 11, 8)->nullable();
-            $table->enum('status_kehadiran', ['hadir', 'telat', 'izin', 'sakit', 'alpha'])->default('alpha');
+            $table->enum('status_kehadiran', ['hadir', 'terlambat', 'izin', 'sakit', 'alpha'])->default('alpha');
             $table->text('keterangan_izin')->nullable();
             $table->string('bukti_izin')->nullable(); 
             $table->time('jam_pulang')->nullable();

@@ -1,26 +1,22 @@
 @extends('layouts.app')
-
 @section('page_title', 'Manajemen Siswa')
-
 @section('content')
 <style>
-    /* Menggunakan variabel yang sudah ada di layouts jika memungkinkan */
     :root {
         --primary-color: #213448;
         --border-color: #b3b9c4ff;
         --radius: 16px;
     }
 
-    /* Card Styling - Ukuran disamakan dengan header layouts */
     .content-card {
         background: #ffffff;
         border: 1px solid var(--border-color);
-        border-radius: var(--radius); /* Mengikuti radius 16px layouts */
+        border-radius: var(--radius);
         overflow: hidden;
     }
 
     .content-card-header {
-        padding: 20px 32px; /* Disamakan dengan padding dashboard-header di layouts */
+        padding: 20px 32px; 
         border-bottom: 1px solid var(--border-color);
         background-color: #ffffff;
     }
@@ -35,7 +31,6 @@
         gap: 8px;
     }
 
-    /* Table Styling */
     .table-custom {
         width: 100%;
         margin-bottom: 0;
@@ -46,7 +41,7 @@
     }
 
     .table-custom th {
-        padding: 12px 32px; /* Padding kiri-kanan disamakan dengan header */
+        padding: 12px 32px; 
         font-size: 13px;
         font-weight: 600;
         color: #495057;
@@ -56,8 +51,7 @@
     }
 
     .table-custom td {
-        padding: 16px 32px; /* Padding kiri-kanan disamakan dengan header */
-        border-bottom: 1px solid #f0f0f0;
+        padding: 16px 32px; 
         font-size: 14px;
         vertical-align: middle;
     }
@@ -66,7 +60,6 @@
         border-bottom: none;
     }
 
-    /* Badge & Button Styling - Desain Tetap */
     .status-badge {
         padding: 6px 12px;
         border-radius: 8px;
@@ -109,7 +102,6 @@
         border-color: var(--border-color);
     }
 
-    /* Modal Styling */
     .modal-custom .modal-content {
         border: none;
         border-radius: var(--radius);
@@ -124,7 +116,6 @@
     }
 </style>
 
-{{-- Menggunakan container-fluid p-0 agar sejajar dengan dashboard-header di layouts --}}
 <div class="container-fluid p-0">
     <div class="content-card">
         <div class="content-card-header d-flex justify-content-between align-items-center">

@@ -1,10 +1,7 @@
 @extends('layouts.app')
-
 @section('page_title', 'Tagihan Saya')
-
 @section('content')
 <div class="container-fluid">
-    {{-- Alert Messages --}}
     @if(session('success'))
         <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
             <i class="bi bi-check-circle-fill me-2 fs-5"></i>
@@ -26,14 +23,12 @@
         <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-0 shadow-sm h-100 position-relative" style="border-radius: 20px; border: 1px solid var(--border-color) !important;">
                 
-                {{-- Label Urutan --}}
                 <div class="position-absolute top-0 start-0 bg-primary text-white px-3 py-1 small fw-bold" style="border-radius: 20px 0 20px 0;">
                     #{{ $t->bulan_ke }}
                 </div>
 
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start mb-4 mt-2">
-                        {{-- Badge Status Modern --}}
                         @php
                             $statusClass = [
                                 'dibayar' => 'bg-success-subtle text-success',
@@ -52,7 +47,6 @@
                         </div>
                     </div>
                     
-                    {{-- Nama Tagihan + Keterangan Bulan --}}
                     <h5 class="fw-bold text-dark mb-1">
                         {{ $t->tagihan->nama_tagihan }} 
                         <span class="text-primary">(Bulan ke-{{ $t->bulan_ke }})</span>
@@ -85,7 +79,6 @@
             </div>
         </div>
 
-        {{-- Modal Bayar --}}
         <div class="modal fade" id="modalBayar{{ $t->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
@@ -93,7 +86,6 @@
                         <h5 class="modal-title fw-bold">Upload Bukti Bayar</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    {{-- Pastikan form memiliki enctype="multipart/form-data" --}}
                     <form action="{{ route('siswa.tagihan.bayar', $t->id) }}" 
                         method="POST" 
                         enctype="multipart/form-data">
@@ -111,7 +103,6 @@
                             
                             <label class="form-label small fw-bold text-muted">Pilih File Foto/Scan Struk</label>
                             
-                            {{-- PENTING: name="bukti_pembayaran" harus sesuai dengan validation di controller --}}
                             <input type="file"
                                 name="bukti_pembayaran"
                                 data-id="{{ $t->id }}"
@@ -123,7 +114,6 @@
                             
                             <div class="form-text small mt-2">Format: JPG, PNG (Maks. 5MB)</div>
                             
-                            {{-- Preview gambar (opsional) --}}
                             <div id="preview-{{ $t->id }}" class="mt-3" style="display: none;">
                                 <img src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
                             </div>
@@ -153,7 +143,6 @@
 </div>
 
 <style>
-    /* Custom Subtle Colors */
     .bg-success-subtle { background-color: #e8f5e9 !important; }
     .bg-warning-subtle { background-color: #fff8e1 !important; }
     .bg-danger-subtle { background-color: #ffebee !important; }
@@ -164,7 +153,6 @@
     }
 </style>
 
-{{-- JavaScript untuk preview gambar (opsional) --}}
 <script>
 document.querySelectorAll('input[name="bukti_pembayaran"]').forEach(input => {
     input.addEventListener('change', function(e) {

@@ -1,17 +1,13 @@
 @extends('layouts.app')
-
 @section('page_title', 'Detail Profil')
-
 @section('content')
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-10">
             <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 20px; border: 1px solid var(--border-color) !important;">
-                {{-- Header Warna Solid (Aksen) --}}
                 <div style="height: 100px; background: linear-gradient(to right, #213448, #3b5977);"></div>
                 
                 <div class="card-body p-4 p-md-5">
-                    {{-- Foto Profil & Nama --}}
                     <div class="text-center" style="margin-top: -80px;">
                         <div class="position-relative d-inline-block">
                             <img src="https://ui-avatars.com/api/?name={{ urlencode($user->nama_lengkap) }}&size=128&background=0D6EFD&color=fff" 
@@ -55,7 +51,6 @@
                         </div>
 
                         <div class="row g-4">
-                            {{-- Nama Lengkap --}}
                             <div class="col-md-6">
                                 <div class="p-3 bg-light rounded-4 border-0 h-100">
                                     <label class="text-muted small text-uppercase fw-bold d-block mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Nama Lengkap</label>
@@ -66,7 +61,6 @@
                                 </div>
                             </div>
 
-                            {{-- Email --}}
                             <div class="col-md-6">
                                 <div class="p-3 bg-light rounded-4 border-0 h-100">
                                     <label class="text-muted small text-uppercase fw-bold d-block mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Alamat Email</label>
@@ -77,7 +71,6 @@
                                 </div>
                             </div>
 
-                            {{-- Sekolah --}}
                             <div class="col-md-12">
                                 <div class="p-3 bg-light rounded-4 border-0">
                                     <label class="text-muted small text-uppercase fw-bold d-block mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Asal Sekolah / Instansi</label>
@@ -90,7 +83,6 @@
                                 </div>
                             </div>
                             
-                            {{-- Tanggal Bergabung --}}
                             <div class="col-md-6">
                                 <div class="p-3 bg-light rounded-4 border-0 h-100">
                                     <label class="text-muted small text-uppercase fw-bold d-block mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Tanggal Mulai PKL</label>
@@ -103,7 +95,6 @@
                                 </div>
                             </div>
 
-                            {{-- Status Keanggotaan --}}
                             <div class="col-md-6">
                                 <div class="p-3 bg-light rounded-4 border-0 h-100">
                                     <label class="text-muted small text-uppercase fw-bold d-block mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Status Akun</label>
@@ -116,7 +107,6 @@
                         </div>
                     </div>
 
-                    {{-- Footer Info --}}
                     <div class="alert bg-primary-subtle border-0 mt-5 p-3" style="border-radius: 15px;">
                         <div class="d-flex align-items-start">
                             <i class="bi bi-info-circle-fill text-primary me-3 fs-5"></i>

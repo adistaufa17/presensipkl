@@ -4,7 +4,6 @@
 
 @section('content')
 <style>
-    /* Penyesuaian lebar agar lurus dengan header layouts/app */
     .content-wrapper-fixed {
         padding: 0 12px;
     }
@@ -351,12 +350,10 @@
 <script>
 $(function () {
 
-    // 🔒 Anti double submit
     $('form').on('submit', function () {
         $(this).find('button[type=submit]').prop('disabled', true);
     });
 
-    // 🔽 Select2 safe init
     function initSelect2() {
         const $el = $('select[name="siswa_id[]"]');
         if ($el.hasClass('select2-hidden-accessible')) return;

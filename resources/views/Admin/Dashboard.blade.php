@@ -215,7 +215,7 @@
                         </div>
 
                         <div class="col-6 col-md-4">
-                            <p class="text-muted mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #ffc107;">Telat</p>
+                            <p class="text-muted mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #ffc107;">terlambat</p>
                             <h3 class="fw-bold mb-0" style="font-size: 28px; color: #ffc107;">{{ $terlambatHariIni ?? 0 }}</h3>
                         </div>
 
@@ -310,7 +310,6 @@
     </div>
 
     <div class="row g-3 mb-4">
-        <!-- Grafik Presensi -->
         <div class="col-lg-4">
             <div class="content-card">
                 <div class="content-card-header">
@@ -323,7 +322,6 @@
             </div>
         </div>
 
-        <!-- Grafik Pembayaran -->
         <div class="col-lg-4">
             <div class="content-card">
                 <div class="content-card-header">
@@ -336,7 +334,6 @@
             </div>
         </div>
 
-        <!-- Grafik Pembagian Sekolah -->
         <div class="col-lg-4">
             <div class="content-card">
                 <div class="content-card-header">
@@ -351,7 +348,6 @@
     </div>
 
     <div class="row g-3 mb-4">
-        <!-- Aktivitas Terbaru -->
         <div class="col-lg-6">
             <div class="content-card">
                 <div class="content-card-header d-flex justify-content-between align-items-center">
@@ -378,7 +374,7 @@
                                     @php
                                         $statusColor = match($item->status_kehadiran ?? '') {
                                             'hadir' => ['bg' => '#d4edda', 'color' => '#28a745'],
-                                            'telat' => ['bg' => '#fff3cd', 'color' => '#ffc107'],
+                                            'terlambat' => ['bg' => '#fff3cd', 'color' => '#ffc107'],
                                             'izin', 'sakit' => ['bg' => '#d1ecf1', 'color' => '#17a2b8'],
                                             'alpa' => ['bg' => '#f8d7da', 'color' => '#dc3545'],
                                             default => ['bg' => '#f0f0f0', 'color' => '#6c757d']
@@ -415,7 +411,6 @@
             </div>
         </div>
 
-        <!-- Pembayaran Perlu Konfirmasi (Preview) -->
         <div class="col-lg-6">
             @if(($tagihanMenunggu ?? 0) > 0)
             <div class="content-card">
@@ -499,7 +494,7 @@ const ctxAttendance = document.getElementById('attendanceChart').getContext('2d'
 const attendanceChart = new Chart(ctxAttendance, {
     type: 'bar',
     data: {
-        labels: ['Hadir', 'Telat', 'Izin/Sakit', 'Alpa'],
+        labels: ['Hadir', 'terlambat', 'Izin/Sakit', 'Alpa'],
         datasets: [{
             label: 'Jumlah Siswa',
             data: [
@@ -627,7 +622,7 @@ function confirmAlpha() {
     const jam = sekarang.getHours();
 
     if (jam < 9) {
-        if (!confirm('Peringatan: Ini masih pagi (sebelum jam 09:00). Jika Anda klik sekarang, siswa yang datang telat nanti harus diubah manual. Yakin?')) {
+        if (!confirm('Peringatan: Ini masih pagi (sebelum jam 09:00). Jika Anda klik sekarang, siswa yang datang terlambat nanti harus diubah manual. Yakin?')) {
             return;
         }
     }

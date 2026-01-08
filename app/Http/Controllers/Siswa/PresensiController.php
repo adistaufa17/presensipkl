@@ -17,30 +17,22 @@ class PresensiController extends Controller
     {
         $id_siswa = Auth::user()->siswa->id;
         $now = now();
-
         $labelBulan = $now->locale('id')->isoFormat('MMMM YYYY');
-        
         $countHadir = Presensi::where('siswa_id', $id_siswa)
             ->whereMonth('tanggal', $now->month)
             ->whereYear('tanggal', $now->year)
             ->where('status_kehadiran', 'hadir')->count();
-
-        $countTelat = Presensi::where('siswa_id', $id_siswa)
+        $countTerlambat = Presensi::where('siswa_id', $id_siswa)
             ->whereMonth('tanggal', $now->month)
             ->whereYear('tanggal', $now->year)
-            ->where('status_kehadiran', 'telat')->count();
-
+            ->where('status_kehadiran', 'terlambat')->count();
         $countAlpa = Presensi::where('siswa_id', $id_siswa)
             ->whereMonth('tanggal', $now->month)
             ->whereYear('tanggal', $now->year)
             ->whereIn('status_kehadiran', ['alpha', 'izin', 'sakit'])->count();
-
         $presensiHariIni = Presensi::where('siswa_id', $id_siswa)
             ->whereDate('tanggal', Carbon::today())->first();
-
         $logs = Presensi::where('siswa_id', $id_siswa)
-        // Jika data tidak muncul, coba matikan filter month sementara untuk testing
-        // ->whereMonth('tanggal', $now->month) 
         ->orderBy('tanggal', 'desc')
         ->take(8)
         ->get();
@@ -51,8 +43,21 @@ class PresensiController extends Controller
 
         return view('siswa.dashboard', compact(
             'presensiHariIni', 'logs', 'tagihanBelumBayar',
-            'labelBulan', 'countHadir', 'countTelat', 'countAlpa'
+            'labelBulan', 'countHadir', 'countTerlambat', 'countAlpa'
         ));
+    }
+
+    private function hitungJarak($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371000;
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+        $a = sin($dLat/2) * sin($dLat/2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon/2) * sin($dLon/2);
+        $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+
+        return $earthRadius * $c;
     }
 
     public function absenMasuk(Request $request)
@@ -71,7 +76,7 @@ class PresensiController extends Controller
             
             if ($aturan && isset($aturan->batas_telat)) {
                 if ($jamSekarang > $aturan->batas_telat) {
-                    $status = 'telat';
+                    $status = 'terlambat';
                 }
             }
             
@@ -143,78 +148,71 @@ class PresensiController extends Controller
     }
 
     public function ajukanIzin(Request $request)
-{
-    // Tambahkan log untuk debugging
-    \Log::info('Data request izin:', $request->all());
-    
-    try {
-        $request->validate([
-            'status_kehadiran' => 'required|in:izin,sakit',
-            'keterangan_izin' => 'required|string|min:10',
-            'bukti_izin' => 'nullable|image|mimes:jpeg,jpg,png|max:2048'
-        ]);
-
-        $siswa = Auth::user()->siswa;
-        $today = today()->toDateString();
-
-        // Cek presensi hari ini
-        $presensiHariIni = Presensi::where('siswa_id', $siswa->id)
-            ->whereDate('tanggal', $today)
-            ->first();
-
-        \Log::info('Presensi hari ini:', ['data' => $presensiHariIni]);
-
-        if ($presensiHariIni && $presensiHariIni->jam_masuk) {
-            \Log::warning('Sudah absen hari ini');
-            return redirect()->back()->with('error', 'Anda sudah melakukan presensi hari ini!');
-        }
-
-        // Upload file jika ada
-        $buktiPath = null;
-        if ($request->hasFile('bukti_izin')) {
-            $buktiPath = $request->file('bukti_izin')->store('presensi/izin', 'public');
-            \Log::info('File uploaded:', ['path' => $buktiPath]);
-        }
-
-        // Data yang akan disimpan
-        $dataPresensi = [
-            'status_kehadiran' => $request->status_kehadiran,
-            'keterangan_izin' => $request->keterangan_izin,
-            'jam_masuk' => now()->format('H:i:s'),
-            'bukti_izin' => $buktiPath,
-        ];
-
-        \Log::info('Data yang akan disimpan:', $dataPresensi);
-
-        // Simpan presensi
-        $presensi = Presensi::updateOrCreate(
-            [
-                'siswa_id' => $siswa->id, 
-                'tanggal' => $today
-            ],
-            $dataPresensi
-        );
-
-        \Log::info('Presensi berhasil disimpan:', ['id' => $presensi->id]);
-
-        return redirect()->route('siswa.dashboard')
-            ->with('success', 'Pengajuan ' . $request->status_kehadiran . ' berhasil dikirim!');
+    {
+        \Log::info('Data request izin:', $request->all());
         
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        \Log::error('Validation error:', $e->errors());
-        return redirect()->back()
-            ->withErrors($e->errors())
-            ->withInput();
+        try {
+            $request->validate([
+                'status_kehadiran' => 'required|in:izin,sakit',
+                'keterangan_izin' => 'required|string|min:10',
+                'bukti_izin' => 'nullable|image|mimes:jpeg,jpg,png|max:2048'
+            ]);
+
+            $siswa = Auth::user()->siswa;
+            $today = today()->toDateString();
+            $presensiHariIni = Presensi::where('siswa_id', $siswa->id)
+                ->whereDate('tanggal', $today)
+                ->first();
+
+            \Log::info('Presensi hari ini:', ['data' => $presensiHariIni]);
+
+            if ($presensiHariIni && $presensiHariIni->jam_masuk) {
+                \Log::warning('Sudah absen hari ini');
+                return redirect()->back()->with('error', 'Anda sudah melakukan presensi hari ini!');
+            }
+
+            $buktiPath = null;
+            if ($request->hasFile('bukti_izin')) {
+                $buktiPath = $request->file('bukti_izin')->store('presensi/izin', 'public');
+                \Log::info('File uploaded:', ['path' => $buktiPath]);
+            }
+            $dataPresensi = [
+                'status_kehadiran' => $request->status_kehadiran,
+                'keterangan_izin' => $request->keterangan_izin,
+                'jam_masuk' => now()->format('H:i:s'),
+                'bukti_izin' => $buktiPath,
+            ];
+
+            \Log::info('Data yang akan disimpan:', $dataPresensi);
+
+            $presensi = Presensi::updateOrCreate(
+                [
+                    'siswa_id' => $siswa->id, 
+                    'tanggal' => $today
+                ],
+                $dataPresensi
+            );
+
+            \Log::info('Presensi berhasil disimpan:', ['id' => $presensi->id]);
+
+            return redirect()->route('siswa.dashboard')
+                ->with('success', 'Pengajuan ' . $request->status_kehadiran . ' berhasil dikirim!');
             
-    } catch (\Exception $e) {
-        \Log::error('Error ajukan izin:', [
-            'message' => $e->getMessage(),
-            'line' => $e->getLine(),
-            'file' => $e->getFile()
-        ]);
-        return redirect()->back()->with('error', 'Gagal mengajukan izin: ' . $e->getMessage());
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error:', $e->errors());
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+                
+        } catch (\Exception $e) {
+            \Log::error('Error ajukan izin:', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+            return redirect()->back()->with('error', 'Gagal mengajukan izin: ' . $e->getMessage());
+        }
     }
-}
 
     public function riwayat(Request $request)
     {

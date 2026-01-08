@@ -60,7 +60,7 @@ class Presensi extends Model
     {
         return match($this->status_kehadiran) {
             'hadir' => 'Hadir',
-            'telat' => 'Terlambat',
+            'terlambat' => 'Terlambat',
             'izin' => 'Izin',
             'sakit' => 'Sakit',
             'alpha' => 'Tanpa Keterangan',

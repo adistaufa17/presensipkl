@@ -28,15 +28,11 @@ class PembayaranController extends Controller
             ->latest()
             ->paginate(10)
             ->withQueryString();
-
         $pembayaranMenunggu = TagihanSiswa::where('status', 'menunggu_konfirmasi')->count();
-    
         $totalLunas = TagihanSiswa::where('status', 'dibayar')
             ->whereMonth('tanggal_bayar', now()->month)
             ->count();
-
         $totalBelumBayar = TagihanSiswa::where('status', 'belum_bayar')->count();
-
         $tagihans = Tagihan::select('nama_tagihan', 'nominal', \DB::raw('MIN(id) as id'), \DB::raw('MIN(created_at) as created_at'))
             ->groupBy('nama_tagihan', 'nominal')
             ->latest('id')
@@ -115,21 +111,20 @@ class PembayaranController extends Controller
     }
 
     public function konfirmasi(Request $request, $id)
-{
-    $request->validate([
-        'status' => 'required',
-        'catatan_admin' => 'nullable|string'
-    ]);
+    {
+        $request->validate([
+            'status' => 'required',
+            'catatan_admin' => 'nullable|string'
+        ]);
 
-    $tagihan = TagihanSiswa::findOrFail($id);
+        $tagihan = TagihanSiswa::findOrFail($id);
 
-    $tagihan->status = $request->status;
-    $tagihan->catatan_admin = $request->catatan_admin; // 🔥 INI KUNCINYA
-    $tagihan->dikonfirmasi_oleh = auth()->id();
-    $tagihan->save();
+        $tagihan->status = $request->status;
+        $tagihan->catatan_admin = $request->catatan_admin; // 🔥 INI KUNCINYA
+        $tagihan->dikonfirmasi_oleh = auth()->id();
+        $tagihan->save();
 
-    return back()->with('success', 'Status pembayaran diperbarui');
-}
-
+        return back()->with('success', 'Status pembayaran diperbarui');
+    }
 
 }

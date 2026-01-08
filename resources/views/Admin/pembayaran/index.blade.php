@@ -147,12 +147,10 @@
         box-shadow: 0 0 0 3px rgba(33, 52, 72, 0.1);
     }
 
-    /* Membuat modal preview lebih lebar */
     #modalPreviewImage .modal-dialog {
-        max-width:1000px; /* Ukuran maksimal lebar */
+        max-width:1000px;
     }
 
-    /* Mengatur gambar agar responsif tapi tetap tajam */
     #previewImg {
         width: 100%;
         height: auto;
@@ -161,10 +159,9 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    /* Efek zoom saat kursor di atas gambar */
     .zoom-container {
         overflow: auto;
-        max-height: 80vh; /* Agar tidak melebihi tinggi layar */
+        max-height: 80vh; 
     }
 
     .custom-select-tagihan option:checked {
@@ -180,7 +177,6 @@
         border-bottom: 1px solid #f8f9fa;
     }
 
-    /* Efek hover agar lebih interaktif */
     .siswa-option:hover {
         background-color: #f1f4f9;
     }
@@ -253,7 +249,6 @@
                 <i class="bi bi-plus-circle me-2"></i>Buat Tagihan
             </button>
             
-            {{-- Tombol Export yang sudah diperbaiki --}}
             <button type="button" onclick="confirmExport()" class="btn btn-dark btn-action rounded-pill px-3">
                 <i class="bi bi-file-pdf me-1"></i> Export PDF
             </button>
@@ -726,9 +721,6 @@
                 document.getElementById('detailContent').innerHTML = '<tr><td colspan="4" class="text-center py-4 text-danger">Gagal memuat data.</td></tr>';
             });
     }
-
-dd($siswaLama, $siswaBaru, $siswaDihapus);
-
 
     function editTagihan(id, nama, nominal, jumlahBulan, selectedSiswaIds) {
         console.log("Edit tagihan ID:", id);

@@ -65,20 +65,15 @@
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
                 
-                {{-- 1. NAMA SISWA --}}
                 {{-- Jalur: TagihanSiswa -> Siswa -> User -> nama_lengkap --}}
                 <td>{{ $p->siswa->user->nama_lengkap ?? 'Nama Tidak Ditemukan' }}</td>
                 
-                {{-- 2. NAMA TAGIHAN --}}
                 <td>{{ $p->tagihan->nama_tagihan ?? '-' }}</td>
                 
-                {{-- 3. BULAN KE --}}
                 <td class="text-center">{{ $p->bulan_ke }}</td>
                 
-                {{-- 4. NOMINAL --}}
                 <td class="text-right">Rp {{ number_format($nominal, 0, ',', '.') }}</td>
                 
-                {{-- 5. STATUS --}}
                 <td class="text-center">
                     @if($p->status == 'dibayar' || $p->status == 'lunas')
                         <span class="status-lunas">LUNAS</span>
@@ -93,7 +88,6 @@
                     @endif
                 </td>
                 
-                {{-- 6. TANGGAL BAYAR --}}
                 <td class="text-center">
                     {{ $p->tanggal_bayar ? \Carbon\Carbon::parse($p->tanggal_bayar)->format('d/m/Y') : '-' }}
                 </td>

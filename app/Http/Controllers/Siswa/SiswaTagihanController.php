@@ -9,19 +9,15 @@ use Illuminate\Support\Facades\Storage;
 
 class SiswaTagihanController extends Controller
 {
-    /**
-     * Tampilkan daftar tagihan siswa yang sedang login
-     */
+    
     public function index()
     {
-        // Ambil siswa_id dari user yang login
         $siswaId = auth()->user()->siswa->id ?? null;
 
         if (!$siswaId) {
             return redirect()->back()->with('error', 'Data siswa tidak ditemukan.');
         }
 
-        // Ambil semua tagihan siswa, urutkan berdasarkan bulan_ke
         $tagihans = TagihanSiswa::with(['tagihan', 'siswa'])
             ->where('siswa_id', $siswaId)
             ->orderBy('bulan_ke', 'asc')
@@ -37,7 +33,7 @@ class SiswaTagihanController extends Controller
         }
 
         $request->validate([
-            'bukti_pembayaran' => 'required|image|mimes:jpeg,jpg,png|max:5120', // 5MB = 5120KB
+            'bukti_pembayaran' => 'required|image|mimes:jpeg,jpg,png|max:5120',
         ], [
             'bukti_pembayaran.required' => 'Bukti pembayaran wajib diupload.',
             'bukti_pembayaran.image' => 'File harus berupa gambar.',

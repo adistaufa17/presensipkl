@@ -105,7 +105,7 @@
         }
         
         .color-hadir { color: #28a745; }
-        .color-telat { color: #ffc107; }
+        .color-terlambat { color: #ffc107; }
         .color-izin { color: #17a2b8; }
         .color-alpha { color: #dc3545; }
         
@@ -172,7 +172,7 @@
                 <div class="label">Total Hadir</div>
             </div>
             <div class="summary-item">
-                <div class="number color-telat">{{ collect($rekapData)->sum('telat') }}</div>
+                <div class="number color-terlambat">{{ collect($rekapData)->sum('terlambat') }}</div>
                 <div class="label">Total Terlambat</div>
             </div>
             <div class="summary-item">
@@ -194,7 +194,7 @@
                 <th width="30%">Nama Siswa</th>
                 <th width="20%">Email</th>
                 <th width="10%">Hadir</th>
-                <th width="10%">Telat</th>
+                <th width="10%">Terlambat</th>
                 <th width="10%">Izin/Sakit</th>
                 <th width="10%">Alpha</th>
                 <th width="5%">%</th>
@@ -215,7 +215,7 @@
                 <td class="nama">{{ $data['siswa']->user->nama_lengkap }}</td>
                 <td class="nama" style="font-size: 8px;">{{ $data['siswa']->user->email }}</td>
                 <td><strong class="color-hadir">{{ $data['hadir'] }}</strong></td>
-                <td><strong class="color-telat">{{ $data['telat'] }}</strong></td>
+                <td><strong class="color-terlambat">{{ $data['terlambat'] }}</strong></td>
                 <td><strong class="color-izin">{{ $data['izin'] }}</strong></td>
                 <td><strong class="color-alpha">{{ $data['alpha'] }}</strong></td>
                 <td><strong>{{ $persentase }}%</strong></td>
@@ -232,7 +232,7 @@
             <tr>
                 <td colspan="3" style="text-align: right;">TOTAL</td>
                 <td>{{ collect($rekapData)->sum('hadir') }}</td>
-                <td>{{ collect($rekapData)->sum('telat') }}</td>
+                <td>{{ collect($rekapData)->sum('terlambat') }}</td>
                 <td>{{ collect($rekapData)->sum('izin') }}</td>
                 <td>{{ collect($rekapData)->sum('alpha') }}</td>
                 <td>-</td>
@@ -254,9 +254,8 @@
     <div class="signature-section">
         <div class="signature-box">
             <p>{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
-            <p>Mengetahui,<br>Kepala Sekolah / Pembimbing</p>
+            <p>Mengetahui,<br>Pembimbing IDUKA</p>
             <div class="signature-line"></div>
-            <p style="margin-top: 5px;">(............................)</p>
         </div>
     </div>
 

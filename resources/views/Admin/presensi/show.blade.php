@@ -1,12 +1,10 @@
 @extends('layouts.app')
-
 @section('page_title', 'Riwayat Presensi Siswa')
-
 @section('content')
+
 <div class="container-fluid">
 
-    {{-- HEADER & KEMBALI --}}
-    <div class="card border-0 shadow-sm mb-4" style="border: 1px solid #e0e0e0 !important; border-radius: 16px;">
+\    <div class="card border-0 shadow-sm mb-4" style="border: 1px solid #e0e0e0 !important; border-radius: 16px;">
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
@@ -22,7 +20,6 @@
         </div>
     </div>
 
-    {{-- PROFIL SISWA & EXPORT --}}
     <div class="card border-0 shadow-sm mb-4" style="border: 1px solid #e0e0e0 !important; border-radius: 16px;">
         <div class="card-body p-4">
             <div class="d-flex align-items-center">
@@ -50,7 +47,6 @@
         </div>
     </div>
 
-    {{-- STATISTIK BULAN INI --}}
     <div class="row g-3 mb-4">
         <div class="col-md-3">
             <div class="card border-0 shadow-sm" style="border: 1px solid #e0e0e0 !important; border-radius: 12px;">
@@ -73,7 +69,7 @@
                             <i class="bi bi-exclamation-circle-fill text-warning fs-3"></i>
                         </div>
                     </div>
-                    <h2 class="fw-bold text-warning mb-1">{{ $stats['telat'] }}</h2>
+                    <h2 class="fw-bold text-warning mb-1">{{ $stats['terlambat'] }}</h2>
                     <p class="text-muted mb-0 small">Hari Terlambat</p>
                 </div>
             </div>
@@ -106,7 +102,6 @@
         </div>
     </div>
 
-    {{-- TABEL RIWAYAT --}}
     <div class="card border-0 shadow-sm" style="border: 1px solid #e0e0e0 !important; border-radius: 16px;">
         <div class="card-header bg-white border-0 py-4">
             <div class="d-flex justify-content-between align-items-center">
@@ -156,7 +151,7 @@
                                 <span class="badge bg-light text-dark border small">
                                     <i class="bi bi-clock me-1"></i>{{ \Carbon\Carbon::parse($r->jam_pulang)->format('H:i') }}
                                 </span>
-                                @elseif(in_array($r->status_kehadiran, ['hadir', 'telat']))
+                                @elseif(in_array($r->status_kehadiran, ['hadir', 'terlambat']))
                                 <small class="text-warning">Belum pulang</small>
                                 @else
                                 <small class="text-muted">-</small>
@@ -166,7 +161,7 @@
                                 @php
                                     $statusColor = match($r->status_kehadiran) {
                                         'hadir' => 'success',
-                                        'telat' => 'warning',
+                                        'terlambat' => 'warning',
                                         'izin', 'sakit' => 'info',
                                         'alpha' => 'danger',
                                         default => 'secondary'
@@ -177,9 +172,9 @@
                                 </span>
                             </td>
                             <td class="py-3">
-                                @if($r->keterangan_izin && !in_array($r->status_kehadiran, ['hadir', 'telat']))
+                                @if($r->keterangan_izin && !in_array($r->status_kehadiran, ['hadir', 'terlambat']))
                                     <small class="text-muted">{{ Str::limit($r->keterangan_izin, 50) }}</small>
-                                @elseif(in_array($r->status_kehadiran, ['hadir', 'telat']))
+                                @elseif(in_array($r->status_kehadiran, ['hadir', 'terlambat']))
                                     <small class="text-muted">-</small>
                                 @else
                                     <small class="text-muted">-</small>

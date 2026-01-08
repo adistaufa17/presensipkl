@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('page_title', 'Riwayat Presensi Siswa')
-
 @section('content')
 <div class="container-fluid px-4 py-4" style="background-color: #fcfcfc; min-height: 100vh;">
 
@@ -88,7 +86,7 @@
                     <div class="bg-warning bg-opacity-10 p-3 rounded-3 d-inline-block mb-2">
                         <i class="bi bi-exclamation-circle-fill text-warning fs-3"></i>
                     </div>
-                    <h3 class="fw-bold text-warning mb-1">{{ $stats['telat'] }}</h3>
+                    <h3 class="fw-bold text-warning mb-1">{{ $stats['terlambat'] }}</h3>
                     <small class="text-muted">Hari Terlambat</small>
                 </div>
             </div>
@@ -172,7 +170,7 @@
                                 @php
                                     $statusColor = match($r->status_kehadiran) {
                                         'hadir' => 'success',
-                                        'telat' => 'warning',
+                                        'terlambat' => 'warning',
                                         'izin', 'sakit' => 'info',
                                         'alpha' => 'danger',
                                         default => 'secondary'
