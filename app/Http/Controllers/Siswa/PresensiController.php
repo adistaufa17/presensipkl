@@ -155,7 +155,7 @@ class PresensiController extends Controller
             $request->validate([
                 'status_kehadiran' => 'required|in:izin,sakit',
                 'keterangan_izin' => 'required|string|min:10',
-                'bukti_izin' => 'nullable|image|mimes:jpeg,jpg,png|max:2048'
+                'bukti_izin' => 'nullable|image|mimes:jpeg,jpg,png|max:10240'
             ]);
 
             $siswa = Auth::user()->siswa;

@@ -33,7 +33,7 @@ class SiswaTagihanController extends Controller
         }
 
         $request->validate([
-            'bukti_pembayaran' => 'required|image|mimes:jpeg,jpg,png|max:5120',
+            'bukti_pembayaran' => 'required|image|mimes:jpeg,jpg,png|max:10240',
         ], [
             'bukti_pembayaran.required' => 'Bukti pembayaran wajib diupload.',
             'bukti_pembayaran.image' => 'File harus berupa gambar.',

@@ -302,6 +302,14 @@
         background-color: #fff;
     }
 
+    #video {
+        transform: scaleX(-1);
+    }
+
+    #photo {
+        transform: scaleX(-1);
+    }
+
     .photo-placeholder {
         width: 80px;
         height: 80px;
